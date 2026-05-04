@@ -36,10 +36,12 @@ function SortableRow({
   field,
   isSelected,
   onToggle,
+  virtualTop,
 }: {
   field: FieldRecord;
   isSelected: boolean;
   onToggle: (id: string) => void;
+  virtualTop: number;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: field.id,
@@ -49,6 +51,10 @@ function SortableRow({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    position: 'absolute' as const,
+    top: virtualTop,
+    left: 0,
+    width: '100%',
   };
 
   return (
@@ -244,6 +250,7 @@ export function FieldLedger({ fields, onFieldsChange }: FieldLedgerProps) {
                       field={field}
                       isSelected={selection.has(field.id)}
                       onToggle={toggleSelect}
+                      virtualTop={vRow.start}
                     />
                   );
                 })}
