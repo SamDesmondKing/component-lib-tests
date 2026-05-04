@@ -1,0 +1,200 @@
+.field-ledger {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f9fafb;
+}
+
+.field-ledger__toolbar {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  align-items: center;
+}
+
+.field-ledger__filter {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.field-ledger__filter:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.field-ledger__new-btn {
+  padding: 0.5rem 1rem;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.field-ledger__new-btn[data-pressed] {
+  background: #1d4ed8;
+}
+
+.field-ledger__scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 0 1.5rem;
+}
+
+.field-ledger__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.field-ledger__th {
+  position: sticky;
+  top: 0;
+  background: #f9fafb;
+  text-align: left;
+  padding: 0.625rem 0.75rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #6b7280;
+  border-bottom: 2px solid #e5e7eb;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.field-ledger__th--sortable {
+  cursor: pointer;
+}
+
+.field-ledger__th--sortable:hover {
+  color: #111827;
+}
+
+.field-ledger__th--drag,
+.field-ledger__th--check {
+  width: 40px;
+}
+
+.field-ledger__sort-icon {
+  font-size: 0.625rem;
+}
+
+.field-ledger__row {
+  display: table-row;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.field-ledger__row:hover {
+  background: #f3f4f6;
+}
+
+.field-ledger__cell {
+  padding: 0.5rem 0.75rem;
+  vertical-align: middle;
+}
+
+.field-ledger__cell--mono {
+  font-family: monospace;
+  color: #6b7280;
+}
+
+.field-ledger__cell--num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.field-ledger__cell--drag {
+  width: 32px;
+  text-align: center;
+}
+
+.field-ledger__cell--check {
+  width: 32px;
+}
+
+.field-ledger__drag-handle {
+  background: none;
+  border: none;
+  cursor: grab;
+  font-size: 1rem;
+  color: #9ca3af;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.field-ledger__drag-handle:active {
+  cursor: grabbing;
+}
+
+.field-ledger__badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.field-ledger__badge--active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.field-ledger__badge--inactive {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Checkbox styling inline */
+.field-ledger .react-aria-Checkbox {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field-ledger .react-aria-Checkbox .indicator {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.field-ledger .react-aria-Checkbox[data-selected] .indicator,
+.field-ledger .react-aria-Checkbox[data-indeterminate] .indicator {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.field-ledger .react-aria-Checkbox svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3px;
+  stroke-dasharray: 22px;
+  stroke-dashoffset: 66;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.field-ledger .react-aria-Checkbox[data-selected] svg,
+.field-ledger .react-aria-Checkbox[data-indeterminate] svg {
+  stroke-dashoffset: 44;
+}
+
+.field-ledger .react-aria-Checkbox[data-indeterminate] svg {
+  stroke: none;
+  fill: #fff;
+}
