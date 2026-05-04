@@ -2,35 +2,50 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #f9fafb;
+  background: #111827;
+  color: #e5e7eb;
+}
+
+.field-ledger__title {
+  margin: 0;
+  padding: 1.25rem 1.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f9fafb;
 }
 
 .field-ledger__toolbar {
   display: flex;
   gap: 0.75rem;
   padding: 1rem 1.5rem;
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
+  background: #1f2937;
+  border-bottom: 1px solid #374151;
   align-items: center;
 }
 
 .field-ledger__filter {
   flex: 1;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid #4b5563;
   border-radius: 6px;
   font-size: 0.875rem;
   outline: none;
+  background: #111827;
+  color: #e5e7eb;
+}
+
+.field-ledger__filter::placeholder {
+  color: #6b7280;
 }
 
 .field-ledger__filter:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
 .field-ledger__new-btn {
   padding: 0.5rem 1rem;
-  background: #2563eb;
+  background: #3b82f6;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -41,7 +56,7 @@
 }
 
 .field-ledger__new-btn[data-pressed] {
-  background: #1d4ed8;
+  background: #2563eb;
 }
 
 .field-ledger__scroll {
@@ -56,17 +71,30 @@
   font-size: 0.875rem;
 }
 
-.field-ledger__th {
+/* Grid layout for consistent column alignment */
+.field-ledger__table thead tr,
+.field-ledger__row {
+  display: grid;
+  grid-template-columns: 40px 1fr 1fr 0.7fr 0.7fr 0.6fr;
+  align-items: center;
+}
+
+.field-ledger__table thead {
+  display: block;
   position: sticky;
   top: 0;
-  background: #f9fafb;
+  z-index: 1;
+}
+
+.field-ledger__th {
+  background: #111827;
   text-align: left;
   padding: 0.625rem 0.75rem;
   font-weight: 600;
   font-size: 0.75rem;
   text-transform: uppercase;
-  color: #6b7280;
-  border-bottom: 2px solid #e5e7eb;
+  color: #9ca3af;
+  border-bottom: 2px solid #374151;
   white-space: nowrap;
   user-select: none;
 }
@@ -76,12 +104,7 @@
 }
 
 .field-ledger__th--sortable:hover {
-  color: #111827;
-}
-
-.field-ledger__th--drag,
-.field-ledger__th--check {
-  width: 40px;
+  color: #f9fafb;
 }
 
 .field-ledger__sort-icon {
@@ -89,50 +112,28 @@
 }
 
 .field-ledger__row {
-  display: table-row;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #1f2937;
 }
 
 .field-ledger__row:hover {
-  background: #f3f4f6;
+  background: #1f2937;
 }
 
 .field-ledger__cell {
   padding: 0.5rem 0.75rem;
-  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .field-ledger__cell--mono {
   font-family: monospace;
-  color: #6b7280;
+  color: #9ca3af;
 }
 
 .field-ledger__cell--num {
   text-align: right;
   font-variant-numeric: tabular-nums;
-}
-
-.field-ledger__cell--drag {
-  width: 32px;
-  text-align: center;
-}
-
-.field-ledger__cell--check {
-  width: 32px;
-}
-
-.field-ledger__drag-handle {
-  background: none;
-  border: none;
-  cursor: grab;
-  font-size: 1rem;
-  color: #9ca3af;
-  padding: 0.25rem;
-  line-height: 1;
-}
-
-.field-ledger__drag-handle:active {
-  cursor: grabbing;
 }
 
 .field-ledger__badge {
@@ -144,16 +145,16 @@
 }
 
 .field-ledger__badge--active {
-  background: #dcfce7;
-  color: #166534;
+  background: #064e3b;
+  color: #6ee7b7;
 }
 
 .field-ledger__badge--inactive {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: #374151;
+  color: #9ca3af;
 }
 
-/* Checkbox styling inline */
+/* Checkbox styling */
 .field-ledger .react-aria-Checkbox {
   position: relative;
   display: flex;
@@ -163,7 +164,7 @@
 .field-ledger .react-aria-Checkbox .indicator {
   width: 18px;
   height: 18px;
-  border: 2px solid #d1d5db;
+  border: 2px solid #4b5563;
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -173,8 +174,8 @@
 
 .field-ledger .react-aria-Checkbox[data-selected] .indicator,
 .field-ledger .react-aria-Checkbox[data-indeterminate] .indicator {
-  background: #2563eb;
-  border-color: #2563eb;
+  background: #3b82f6;
+  border-color: #3b82f6;
 }
 
 .field-ledger .react-aria-Checkbox svg {

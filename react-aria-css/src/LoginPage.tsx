@@ -25,13 +25,9 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     setIsPending(true);
     setTimeout(() => {
       setIsPending(false);
-      if (data.email === 'admin@test.com' && data.password === 'password') {
-        setToast({ type: 'success', message: 'Welcome back' });
-        sessionStorage.setItem('auth_token', 'mock-token');
-        setTimeout(onLogin, 800);
-      } else {
-        setToast({ type: 'error', message: 'Invalid credentials' });
-      }
+      setToast({ type: 'success', message: 'Welcome back' });
+      sessionStorage.setItem('auth_token', 'mock-token');
+      setTimeout(onLogin, 800);
     }, 1000);
   }
 

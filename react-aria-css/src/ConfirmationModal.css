@@ -9,12 +9,13 @@
 }
 
 .confirmation-modal {
-  background: #fff;
+  background: #1f2937;
   border-radius: 12px;
   padding: 1.5rem;
   max-width: 400px;
   width: 90vw;
   outline: none;
+  color: #e5e7eb;
 }
 
 .confirmation-modal__title {
@@ -25,7 +26,7 @@
 .confirmation-modal__body {
   margin: 0 0 1.25rem;
   font-size: 0.875rem;
-  color: #4b5563;
+  color: #9ca3af;
   line-height: 1.5;
 }
 
@@ -45,8 +46,8 @@
 }
 
 .confirmation-modal__btn--cancel {
-  background: #f3f4f6;
-  color: #374151;
+  background: #374151;
+  color: #e5e7eb;
 }
 
 .confirmation-modal__btn--confirm {

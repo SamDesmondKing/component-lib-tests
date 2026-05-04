@@ -1,22 +1,5 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-  useSortable,
-  arrayMove,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { Checkbox, Input, Button } from 'react-aria-components';
 import type { FieldRecord } from './types';
 import { FloatingActionBar } from './FloatingActionBar';
@@ -32,7 +15,7 @@ interface FieldLedgerProps {
   onFieldsChange: (fields: FieldRecord[]) => void;
 }
 
-function SortableRow({
+function FieldRow({
   field,
   isSelected,
   onToggle,
@@ -41,23 +24,8 @@ function SortableRow({
   isSelected: boolean;
   onToggle: (id: string) => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: field.id,
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
   return (
-    <tr ref={setNodeRef} style={style} className="field-ledger__row">
-      <td className="field-ledger__cell field-ledger__cell--drag">
-        <button className="field-ledger__drag-handle" aria-label="Drag to reorder" {...attributes} {...listeners}>
-          ⠿
-        </button>
-      </td>
+    <tr className="field-ledger__row">
       <td className="field-ledger__cell field-ledger__cell--check">
         <Checkbox isSelected={isSelected} onChange={() => onToggle(field.id)} aria-label={`Select ${field.label}`}>
           <div className="indicator">
@@ -151,20 +119,6 @@ export function FieldLedger({ fields, onFieldsChange }: FieldLedgerProps) {
     setShowDeleteModal(false);
   };
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  );
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const oldIndex = fields.findIndex((f) => f.id === active.id);
-      const newIndex = fields.findIndex((f) => f.id === over.id);
-      onFieldsChange(arrayMove(fields, oldIndex, newIndex));
-    }
-  };
-
   const columns: { key: SortKey; label: string }[] = [
     { key: 'label', label: 'Label' },
     { key: 'name', label: 'Name' },
@@ -175,6 +129,7 @@ export function FieldLedger({ fields, onFieldsChange }: FieldLedgerProps) {
 
   return (
     <div className="field-ledger">
+      <h1 className="field-ledger__title">Field Ledger</h1>
       <div className="field-ledger__toolbar">
         <Input
           className="field-ledger__filter"
@@ -189,65 +144,60 @@ export function FieldLedger({ fields, onFieldsChange }: FieldLedgerProps) {
       </div>
 
       <div className="field-ledger__scroll" ref={parentRef}>
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={sorted.map((f) => f.id)} strategy={verticalListSortingStrategy}>
-            <table className="field-ledger__table">
-              <thead>
-                <tr>
-                  <th className="field-ledger__th field-ledger__th--drag" />
-                  <th className="field-ledger__th field-ledger__th--check">
-                    <Checkbox
-                      isSelected={sorted.length > 0 && selection.size === sorted.length}
-                      isIndeterminate={selection.size > 0 && selection.size < sorted.length}
-                      onChange={toggleAll}
-                      aria-label="Select all"
-                    >
-                      <div className="indicator">
-                        <svg viewBox="0 0 18 18" aria-hidden="true">
-                          {selection.size > 0 && selection.size < sorted.length
-                            ? <rect x={1} y={7.5} width={16} height={3} />
-                            : <polyline points="2 9 7 14 16 4" />}
-                        </svg>
-                      </div>
-                    </Checkbox>
-                  </th>
-                  {columns.map((col) => (
-                    <th
-                      key={col.key}
-                      className="field-ledger__th field-ledger__th--sortable"
-                      onClick={() => toggleSort(col.key)}
-                      aria-sort={sortKey === col.key ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
-                    >
-                      {col.label}
-                      {sortKey === col.key && (
-                        <span className="field-ledger__sort-icon">{sortDir === 'asc' ? ' ▲' : ' ▼'}</span>
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody
-                style={{
-                  height: `${virtualizer.getTotalSize()}px`,
-                  position: 'relative',
-                  display: 'block',
-                }}
-              >
-                {virtualizer.getVirtualItems().map((vRow) => {
-                  const field = sorted[vRow.index];
-                  return (
-                    <SortableRow
-                      key={field.id}
-                      field={field}
-                      isSelected={selection.has(field.id)}
-                      onToggle={toggleSelect}
-                    />
-                  );
-                })}
-              </tbody>
-            </table>
-          </SortableContext>
-        </DndContext>
+        <table className="field-ledger__table">
+          <thead>
+            <tr>
+              <th className="field-ledger__th field-ledger__th--check">
+                <Checkbox
+                  isSelected={sorted.length > 0 && selection.size === sorted.length}
+                  isIndeterminate={selection.size > 0 && selection.size < sorted.length}
+                  onChange={toggleAll}
+                  aria-label="Select all"
+                >
+                  <div className="indicator">
+                    <svg viewBox="0 0 18 18" aria-hidden="true">
+                      {selection.size > 0 && selection.size < sorted.length
+                        ? <rect x={1} y={7.5} width={16} height={3} />
+                        : <polyline points="2 9 7 14 16 4" />}
+                    </svg>
+                  </div>
+                </Checkbox>
+              </th>
+              {columns.map((col) => (
+                <th
+                  key={col.key}
+                  className="field-ledger__th field-ledger__th--sortable"
+                  onClick={() => toggleSort(col.key)}
+                  aria-sort={sortKey === col.key ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
+                >
+                  {col.label}
+                  {sortKey === col.key && (
+                    <span className="field-ledger__sort-icon">{sortDir === 'asc' ? ' ▲' : ' ▼'}</span>
+                  )}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody
+            style={{
+              height: `${virtualizer.getTotalSize()}px`,
+              position: 'relative',
+              display: 'block',
+            }}
+          >
+            {virtualizer.getVirtualItems().map((vRow) => {
+              const field = sorted[vRow.index];
+              return (
+                <FieldRow
+                  key={field.id}
+                  field={field}
+                  isSelected={selection.has(field.id)}
+                  onToggle={toggleSelect}
+                />
+              );
+            })}
+          </tbody>
+        </table>
       </div>
 
       {selection.size > 0 && (

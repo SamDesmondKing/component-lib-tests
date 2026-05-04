@@ -8,15 +8,16 @@
 }
 
 .field-drawer {
-  background: #fff;
+  background: #1f2937;
   width: 480px;
   max-width: 90vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
   outline: none;
-  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
   animation: drawer-slide-in 200ms ease-out;
+  color: #e5e7eb;
 }
 
 @keyframes drawer-slide-in {
@@ -33,7 +34,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #374151;
 }
 
 .field-drawer__title {
@@ -46,13 +47,13 @@
   border: none;
   font-size: 1.25rem;
   cursor: pointer;
-  color: #6b7280;
+  color: #9ca3af;
   padding: 0.25rem;
   line-height: 1;
 }
 
 .field-drawer__close:hover {
-  color: #111827;
+  color: #f9fafb;
 }
 
 .field-drawer__body {
