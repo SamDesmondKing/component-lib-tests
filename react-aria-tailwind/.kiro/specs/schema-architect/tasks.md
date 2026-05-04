@@ -5,47 +5,47 @@
 ### TASK-1: Login Form `[scaffold]`
 **Requirement:** REQUIREMENT-1
 
-- [ ] Create `LoginPage` component with email and password fields using React Aria inputs
-- [ ] Add blur validation with inline error messages for required fields
-- [ ] Implement password show/hide toggle button
-- [ ] Add loading state to submit button during mock auth request
-- [ ] Implement toast notification for success ("Welcome back") and failure ("Invalid credentials")
-- [ ] Redirect to Field Ledger on successful login
-- [ ] Store mock auth token in memory
+- [x] Create `LoginPage` component with email and password fields using React Aria inputs
+- [x] Add blur validation with inline error messages for required fields
+- [x] Implement password show/hide toggle button
+- [x] Add loading state to submit button during mock auth request
+- [x] Implement toast notification for success ("Welcome back") and failure ("Invalid credentials")
+- [x] Redirect to Field Ledger on successful login
+- [x] Store mock auth token in memory
 
 ## Epic 2: The Field Ledger
 
 ### TASK-2: Field Overview Table `[scaffold]`
 **Requirement:** REQUIREMENT-2
 
-- [ ] Generate 1,000 mock field records on mount conforming to the core JSON schema
-- [ ] Implement virtualized table rendering (e.g., `@tanstack/react-virtual`)
-- [ ] Add columns: Label, Name (slug), Type, Status, Usage Count
-- [ ] Implement sortable column headers with ascending/descending toggle
-- [ ] Add real-time search/filter input that filters by label or name
-- [ ] Render status as a badge (`active` = green, `inactive` = grey)
+- [x] Generate 1,000 mock field records on mount conforming to the core JSON schema
+- [x] Implement virtualized table rendering (e.g., `@tanstack/react-virtual`)
+- [x] Add columns: Label, Name (slug), Type, Status, Usage Count
+- [x] Implement sortable column headers with ascending/descending toggle
+- [x] Add real-time search/filter input that filters by label or name
+- [x] Render status as a badge (`active` = green, `inactive` = grey)
 
 ### TASK-3: Bulk Management `[scaffold]`
 **Requirement:** REQUIREMENT-3
 
-- [ ] Add per-row checkbox and "select all" checkbox in table header
-- [ ] Track selection as a `Set<string>` of field IDs in local state
-- [ ] Show floating action bar (portal) at bottom when 1+ rows selected
-- [ ] Display selected count and "Deactivate" / "Delete" actions in the bar
-- [ ] "Delete" opens a confirmation modal (React Aria Dialog)
-- [ ] On confirm, remove selected rows from state and dismiss action bar
-- [ ] "Deactivate" sets `status: inactive` on selected records
+- [x] Add per-row checkbox and "select all" checkbox in table header
+- [x] Track selection as a `Set<string>` of field IDs in local state
+- [x] Show floating action bar (portal) at bottom when 1+ rows selected
+- [x] Display selected count and "Deactivate" / "Delete" actions in the bar
+- [x] "Delete" opens a confirmation modal (React Aria Dialog)
+- [x] On confirm, remove selected rows from state and dismiss action bar
+- [x] "Deactivate" sets `status: inactive` on selected records
 
 ## Epic 3: The Builder
 
 ### TASK-4: Side-Drawer `[scaffold]`
 **Requirement:** REQUIREMENT-4
 
-- [ ] Add "New Field" button to the table header area
-- [ ] Implement right-side drawer using a portal with backdrop overlay
-- [ ] Trap focus inside the drawer while open (React Aria focus management)
-- [ ] Close drawer on Escape key or backdrop click
-- [ ] Add drawer header with "New Field" title and close button
+- [x] Add "New Field" button to the table header area
+- [x] Implement right-side drawer using a portal with backdrop overlay
+- [x] Trap focus inside the drawer while open (React Aria focus management)
+- [x] Close drawer on Escape key or backdrop click
+- [x] Add drawer header with "New Field" title and close button
 
 ### TASK-5: Conditional Configuration Form `[manual]`
 **Requirement:** REQUIREMENT-5
@@ -86,8 +86,8 @@
 ### TASK-8: Drag-and-Drop Reordering `[scaffold]`
 **Requirement:** REQUIREMENT-8
 
-- [ ] Add drag handle to each row in the Field Ledger
-- [ ] Integrate dnd-kit for drag-and-drop reordering
-- [ ] Show visual feedback: semi-transparent dragged row, highlighted drop target
-- [ ] Persist reordered list in local state as an index array
-- [ ] Support keyboard reordering (arrow keys on drag handle) for accessibility
+- [x] Add drag handle to each row in the Field Ledger
+- [x] Integrate dnd-kit for drag-and-drop reordering
+- [x] Show visual feedback: semi-transparent dragged row, highlighted drop target
+- [x] Persist reordered list in local state as an index array
+- [x] Support keyboard reordering (arrow keys on drag handle) for accessibility
