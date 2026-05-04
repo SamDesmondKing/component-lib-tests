@@ -249,9 +249,12 @@ function SortableRow({
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: field.id })
 
+  const dndTransform = CSS.Transform.toString(transform)
+  const combinedTransform = [style?.transform, dndTransform].filter(Boolean).join(' ')
+
   const combinedStyle: React.CSSProperties = {
     ...style,
-    transform: CSS.Transform.toString(transform),
+    transform: combinedTransform || undefined,
     transition,
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 10 : undefined,
