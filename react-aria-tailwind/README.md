@@ -73,3 +73,17 @@ export default defineConfig([
   },
 ])
 ```
+
+Conditional Configuration [manual] — As an admin, I want the configuration form to change based on the selected 'Type'.
+
+    Acceptance Criteria:
+        Form always shows: Label, Name (auto-slugified from Label), Type (select), Status, Placeholder, Default Value, Required (checkbox)
+        Selecting number reveals: Min, Max, Decimal Places
+        Selecting select reveals: Options (a dynamic list where items can be added/removed)
+        Selecting date reveals: Min Date, Max Date
+        Selecting text reveals: Pattern (regex), Max Length
+        Selecting boolean hides all type-specific fields
+        Name field auto-populates as a slug of Label but remains manually editable
+    Components: Text input, select/combobox, checkbox, number input, dynamic list (add/remove), date input
+    Data Flow: Form state is a single object matching the core JSON schema. Type change resets type-specific fields to their defaults.
+    DX Note: Tests how naturally the framework handles controlled, conditional form state without a dedicated form library.
