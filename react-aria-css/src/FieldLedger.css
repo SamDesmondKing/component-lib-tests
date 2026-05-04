@@ -8,10 +8,13 @@
 
 .field-ledger__title {
   margin: 0;
-  padding: 1.25rem 1.5rem 0;
+  padding: 1.25rem 1.5rem;
   font-size: 1.5rem;
   font-weight: 700;
   color: #f9fafb;
+  letter-spacing: -0.025em;
+  border-bottom: 1px solid #374151;
+  background: #1f2937;
 }
 
 .field-ledger__toolbar {
