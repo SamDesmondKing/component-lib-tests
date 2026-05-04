@@ -123,7 +123,7 @@ export function FieldLedger() {
     <div className="flex h-screen flex-col bg-gray-950">
       {/* Header */}
       <div className="flex items-center gap-4 border-b border-gray-700 bg-gray-900 px-6 py-3">
-        <h1 className="text-lg font-semibold text-gray-100">Field Ledger</h1>
+        <h1 className="text-lg font-semibold text-gray-100">Field Ledger - Tailwind</h1>
         <div className="flex-1" />
         <TextField value={filter} onChange={setFilter} className="flex items-center gap-2" aria-label="Filter fields">
           <Label className="sr-only">Filter</Label>
