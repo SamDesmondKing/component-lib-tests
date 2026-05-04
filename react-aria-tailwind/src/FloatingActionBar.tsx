@@ -8,7 +8,7 @@ interface FloatingActionBarProps {
 
 export function FloatingActionBar({ count, onDeactivate, onDelete }: FloatingActionBarProps) {
   return (
-    <div className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-4 rounded-xl bg-gray-900 px-6 py-3 text-sm text-white shadow-2xl">
+    <div className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-4 rounded-xl bg-gray-800 px-6 py-3 text-sm text-white shadow-2xl ring-1 ring-gray-700">
       <span className="font-medium">{count} selected</span>
       <Button
         onPress={onDeactivate}

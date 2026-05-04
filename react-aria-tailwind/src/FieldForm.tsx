@@ -67,8 +67,8 @@ export function FieldForm({ existingFields: _existingFields, onSave }: FieldForm
     onSave(field)
   }
 
-  const inputClass = "w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-  const labelClass = "text-sm font-medium text-gray-700"
+  const inputClass = "w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-1.5 text-sm text-gray-200 placeholder-gray-500 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+  const labelClass = "text-sm font-medium text-gray-300"
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -95,10 +95,10 @@ export function FieldForm({ existingFields: _existingFields, onSave }: FieldForm
           <SelectValue />
           <span>▾</span>
         </Button>
-        <Popover className="w-(--trigger-width) rounded-lg border border-gray-200 bg-white shadow-lg">
+        <Popover className="w-(--trigger-width) rounded-lg border border-gray-600 bg-gray-800 shadow-lg">
           <ListBox className="p-1">
             {FIELD_TYPES.map(t => (
-              <ListBoxItem key={t} id={t} className="cursor-pointer rounded px-3 py-1.5 text-sm capitalize hover:bg-blue-50 data-[focused]:bg-blue-50">
+              <ListBoxItem key={t} id={t} className="cursor-pointer rounded px-3 py-1.5 text-sm capitalize text-gray-200 hover:bg-gray-700 data-[focused]:bg-gray-700">
                 {t}
               </ListBoxItem>
             ))}
@@ -117,10 +117,10 @@ export function FieldForm({ existingFields: _existingFields, onSave }: FieldForm
           <SelectValue />
           <span>▾</span>
         </Button>
-        <Popover className="w-(--trigger-width) rounded-lg border border-gray-200 bg-white shadow-lg">
+        <Popover className="w-(--trigger-width) rounded-lg border border-gray-600 bg-gray-800 shadow-lg">
           <ListBox className="p-1">
             {STATUSES.map(s => (
-              <ListBoxItem key={s} id={s} className="cursor-pointer rounded px-3 py-1.5 text-sm capitalize hover:bg-blue-50 data-[focused]:bg-blue-50">
+              <ListBoxItem key={s} id={s} className="cursor-pointer rounded px-3 py-1.5 text-sm capitalize text-gray-200 hover:bg-gray-700 data-[focused]:bg-gray-700">
                 {s}
               </ListBoxItem>
             ))}
@@ -154,31 +154,31 @@ export function FieldForm({ existingFields: _existingFields, onSave }: FieldForm
         onChange={v => setField(prev => ({ ...prev, validation: { ...prev.validation, required: v } }))}
         className="flex items-center gap-2"
       >
-        <div className="flex h-4 w-4 items-center justify-center rounded border border-gray-400 bg-white text-[10px] text-white data-[selected]:bg-blue-600 data-[selected]:border-blue-600">
+        <div className="flex h-4 w-4 items-center justify-center rounded border border-gray-500 bg-gray-700 text-[10px] text-transparent data-[selected]:bg-blue-600 data-[selected]:border-blue-600 data-[selected]:text-white">
           ✓
         </div>
-        <span className="text-sm text-gray-700">Required</span>
+        <span className="text-sm text-gray-300">Required</span>
       </Checkbox>
 
       {/* ── Type-specific fields placeholder ── */}
       {/* [manual] TASK-5: Conditional Configuration — implement type-specific fields here */}
-      <div className="rounded-lg border border-dashed border-gray-300 p-4">
-        <p className="text-xs text-gray-400">
+      <div className="rounded-lg border border-dashed border-gray-600 p-4">
+        <p className="text-xs text-gray-500">
           Type-specific fields for "{field.type}" go here. (Manual implementation — TASK-5)
         </p>
       </div>
 
       {/* ── Visibility Rule placeholder ── */}
       {/* [manual] TASK-7: Nested Rule Builder — implement visibility rules here */}
-      <div className="rounded-lg border border-dashed border-gray-300 p-4">
-        <p className="text-xs text-gray-400">
+      <div className="rounded-lg border border-dashed border-gray-600 p-4">
+        <p className="text-xs text-gray-500">
           Visibility Rule section goes here. (Manual implementation — TASK-7)
         </p>
       </div>
 
       <Button
         type="submit"
-        className="mt-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+        className="mt-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
       >
         Save Field
       </Button>

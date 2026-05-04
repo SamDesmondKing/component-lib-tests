@@ -40,14 +40,14 @@ export function FieldDrawer({ existingFields, onClose, onSave }: FieldDrawerProp
         ref={drawerRef}
         role="dialog"
         aria-label="New Field"
-        className="relative z-10 flex h-full w-full max-w-2xl flex-col bg-white shadow-2xl"
+        className="relative z-10 flex h-full w-full max-w-2xl flex-col bg-gray-900 shadow-2xl"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-          <h2 className="text-lg font-semibold text-gray-900">New Field</h2>
+        <div className="flex items-center justify-between border-b border-gray-700 px-6 py-4">
+          <h2 className="text-lg font-semibold text-gray-100">New Field</h2>
           <Button
             onPress={onClose}
-            className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            className="rounded-lg p-1 text-gray-400 hover:bg-gray-800 hover:text-gray-200"
             aria-label="Close"
           >
             ✕
@@ -60,9 +60,9 @@ export function FieldDrawer({ existingFields, onClose, onSave }: FieldDrawerProp
             <FieldForm existingFields={existingFields} onSave={onSave} />
           </div>
           {/* Preview panel — placeholder for [manual] TASK-6: Live Component Preview */}
-          <div className="w-72 border-l border-gray-200 bg-gray-50 p-6">
-            <p className="text-xs font-medium uppercase text-gray-400">Preview</p>
-            <p className="mt-4 text-sm text-gray-500">
+          <div className="w-72 border-l border-gray-700 bg-gray-950 p-6">
+            <p className="text-xs font-medium uppercase text-gray-500">Preview</p>
+            <p className="mt-4 text-sm text-gray-400">
               Live preview will render here. (Manual implementation)
             </p>
           </div>

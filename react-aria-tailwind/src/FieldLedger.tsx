@@ -120,21 +120,21 @@ export function FieldLedger() {
   ]
 
   return (
-    <div className="flex h-screen flex-col bg-gray-50">
+    <div className="flex h-screen flex-col bg-gray-950">
       {/* Header */}
-      <div className="flex items-center gap-4 border-b border-gray-200 bg-white px-6 py-3">
-        <h1 className="text-lg font-semibold text-gray-900">Field Ledger</h1>
+      <div className="flex items-center gap-4 border-b border-gray-700 bg-gray-900 px-6 py-3">
+        <h1 className="text-lg font-semibold text-gray-100">Field Ledger</h1>
         <div className="flex-1" />
         <TextField value={filter} onChange={setFilter} className="flex items-center gap-2" aria-label="Filter fields">
           <Label className="sr-only">Filter</Label>
           <Input
             placeholder="Search fields…"
-            className="w-64 rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+            className="w-64 rounded-lg border border-gray-600 bg-gray-800 px-3 py-1.5 text-sm text-gray-200 placeholder-gray-500 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
           />
         </TextField>
         <Button
           onPress={() => setDrawerOpen(true)}
-          className="rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+          className="rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-500"
         >
           New Field
         </Button>
@@ -144,7 +144,7 @@ export function FieldLedger() {
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <div className="flex-1 overflow-hidden px-6 py-4">
           {/* Table header */}
-          <div className="flex items-center gap-2 rounded-t-lg border border-gray-200 bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 uppercase">
+          <div className="flex items-center gap-2 rounded-t-lg border border-gray-700 bg-gray-800 px-3 py-2 text-xs font-medium text-gray-400 uppercase">
             <div className="w-8" /> {/* drag handle spacer */}
             <Checkbox
               isSelected={filtered.length > 0 && selected.size === filtered.length}
@@ -155,7 +155,7 @@ export function FieldLedger() {
             >
               {({isSelected, isIndeterminate}) => (
                 <div className={`flex h-4 w-4 items-center justify-center rounded border text-[10px] ${
-                  isSelected || isIndeterminate ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-400 bg-white text-white'
+                  isSelected || isIndeterminate ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-500 bg-gray-700 text-transparent'
                 }`}>
                   ✓
                 </div>
@@ -165,7 +165,7 @@ export function FieldLedger() {
               <button
                 key={col.key}
                 onClick={() => toggleSort(col.key)}
-                className={`text-left hover:text-gray-900 ${col.width}`}
+                className={`text-left hover:text-gray-200 ${col.width}`}
               >
                 {col.label}{sortIndicator(col.key)}
               </button>
@@ -175,7 +175,7 @@ export function FieldLedger() {
           {/* Virtualized rows */}
           <div
             ref={parentRef}
-            className="overflow-auto border-x border-b border-gray-200 bg-white"
+            className="overflow-auto border-x border-b border-gray-700 bg-gray-900"
             style={{ height: 'calc(100vh - 160px)' }}
           >
             <SortableContext items={filtered.map(f => f.id)} strategy={verticalListSortingStrategy}>
@@ -268,14 +268,14 @@ function SortableRow({
     <div
       ref={setNodeRef}
       style={combinedStyle}
-      className={`flex items-center gap-2 border-b border-gray-100 px-3 text-sm ${
-        isSelected ? 'bg-blue-50' : 'hover:bg-gray-50'
+      className={`flex items-center gap-2 border-b border-gray-800 px-3 text-sm ${
+        isSelected ? 'bg-blue-950' : 'hover:bg-gray-800'
       } ${isDragging ? 'shadow-lg' : ''}`}
     >
       <button
         {...attributes}
         {...listeners}
-        className="w-8 cursor-grab text-gray-400 hover:text-gray-600 active:cursor-grabbing"
+        className="w-8 cursor-grab text-gray-500 hover:text-gray-300 active:cursor-grabbing"
         aria-label={`Reorder ${field.label}`}
       >
         ⠿
@@ -288,23 +288,23 @@ function SortableRow({
       >
         {({isSelected: checked}) => (
           <div className={`flex h-4 w-4 items-center justify-center rounded border text-[10px] ${
-            checked ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-400 bg-white text-white'
+            checked ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-500 bg-gray-700 text-transparent'
           }`}>
             ✓
           </div>
         )}
       </Checkbox>
-      <span className={columns[0].width + ' truncate'}>{field.label}</span>
-      <span className={columns[1].width + ' truncate text-gray-500 font-mono text-xs'}>{field.name}</span>
-      <span className={columns[2].width + ' text-xs capitalize'}>{field.type}</span>
+      <span className={columns[0].width + ' truncate text-gray-200'}>{field.label}</span>
+      <span className={columns[1].width + ' truncate text-gray-400 font-mono text-xs'}>{field.name}</span>
+      <span className={columns[2].width + ' text-xs capitalize text-gray-300'}>{field.type}</span>
       <span className={columns[3].width}>
         <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-          field.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+          field.status === 'active' ? 'bg-green-900 text-green-400' : 'bg-gray-800 text-gray-400'
         }`}>
           {field.status}
         </span>
       </span>
-      <span className={columns[4].width + ' text-xs text-gray-500 text-right'}>{field.usageCount}</span>
+      <span className={columns[4].width + ' text-xs text-gray-400 text-right'}>{field.usageCount}</span>
     </div>
   )
 }
