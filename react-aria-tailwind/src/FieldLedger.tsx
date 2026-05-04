@@ -153,9 +153,13 @@ export function FieldLedger() {
               className="mr-2 flex items-center"
               aria-label="Select all"
             >
-              <div className="flex h-4 w-4 items-center justify-center rounded border border-gray-400 bg-white text-[10px] text-white data-[selected]:bg-blue-600 data-[selected]:border-blue-600 data-[indeterminate]:bg-blue-600 data-[indeterminate]:border-blue-600">
-                ✓
-              </div>
+              {({isSelected, isIndeterminate}) => (
+                <div className={`flex h-4 w-4 items-center justify-center rounded border text-[10px] ${
+                  isSelected || isIndeterminate ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-400 bg-white text-white'
+                }`}>
+                  ✓
+                </div>
+              )}
             </Checkbox>
             {columns.map(col => (
               <button
@@ -282,9 +286,13 @@ function SortableRow({
         className="mr-2 flex items-center"
         aria-label={`Select ${field.label}`}
       >
-        <div className="flex h-4 w-4 items-center justify-center rounded border border-gray-400 bg-white text-[10px] text-white data-[selected]:bg-blue-600 data-[selected]:border-blue-600">
-          ✓
-        </div>
+        {({isSelected: checked}) => (
+          <div className={`flex h-4 w-4 items-center justify-center rounded border text-[10px] ${
+            checked ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-400 bg-white text-white'
+          }`}>
+            ✓
+          </div>
+        )}
       </Checkbox>
       <span className={columns[0].width + ' truncate'}>{field.label}</span>
       <span className={columns[1].width + ' truncate text-gray-500 font-mono text-xs'}>{field.name}</span>
