@@ -4,10 +4,34 @@
 	box-sizing: border-box;
 }
 
+:root {
+	--bg: #ffffff;
+	--surface: #f9fafb;
+	--text: #111827;
+	--text-muted: #6b7280;
+	--border: #e5e7eb;
+	--badge-active-bg: #d1fae5;
+	--badge-active-text: #065f46;
+	--badge-inactive-bg: #f3f4f6;
+	--badge-inactive-text: #6b7280;
+}
+
+[data-theme="dark"] {
+	--bg: #111827;
+	--surface: #1f2937;
+	--text: #e5e7eb;
+	--text-muted: #9ca3af;
+	--border: #374151;
+	--badge-active-bg: #064e3b;
+	--badge-active-text: #6ee7b7;
+	--badge-inactive-bg: #374151;
+	--badge-inactive-text: #9ca3af;
+}
+
 body {
 	margin: 0;
 	font-family: system-ui, -apple-system, sans-serif;
 	-webkit-font-smoothing: antialiased;
-	color: #e5e7eb;
-	background: #111827;
+	color: var(--text);
+	background: var(--bg);
 }

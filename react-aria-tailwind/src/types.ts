@@ -1,4 +1,4 @@
-export type FieldType = "text" | "number" | "boolean" | "date" | "select";
+export type FieldType = "text" | "number" | "boolean" | "select";
 export type FieldStatus = "active" | "inactive";
 export type Operator = "equals" | "contains" | "filled";
 

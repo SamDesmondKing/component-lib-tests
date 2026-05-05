@@ -5,7 +5,6 @@ const TYPES: FieldRecord["type"][] = [
 	"text",
 	"number",
 	"boolean",
-	"date",
 	"select",
 ];
 const STATUSES: FieldRecord["status"][] = ["active", "inactive"];

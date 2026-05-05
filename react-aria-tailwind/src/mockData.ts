@@ -4,7 +4,6 @@ const FIELD_TYPES: FieldType[] = [
 	"text",
 	"number",
 	"boolean",
-	"date",
 	"select",
 ];
 const STATUSES: FieldStatus[] = ["active", "inactive"];

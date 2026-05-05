@@ -22,6 +22,8 @@ import type { FieldRecord } from "./types";
 import { FloatingActionBar } from "./FloatingActionBar";
 import { ConfirmationModal } from "./ConfirmationModal";
 import { FieldDrawer } from "./FieldDrawer";
+import { ThemeToggle } from "./ThemeToggle";
+import { SummaryBar } from "./SummaryBar";
 import "./FieldLedger.css";
 
 type SortKey = "label" | "name" | "type" | "status" | "usageCount";
@@ -222,6 +224,7 @@ export function FieldLedger({ fields, onFieldsChange }: FieldLedgerProps) {
 					onChange={(e) => setFilter(e.target.value)}
 					aria-label="Filter fields"
 				/>
+				<ThemeToggle />
 				<Button
 					className="field-ledger__new-btn"
 					onPress={() => setDrawerOpen(true)}
@@ -229,6 +232,8 @@ export function FieldLedger({ fields, onFieldsChange }: FieldLedgerProps) {
 					New Field
 				</Button>
 			</div>
+
+			<SummaryBar fields={fields} />
 
 			<div className="field-ledger__scroll" ref={parentRef}>
 				<DndContext
@@ -331,7 +336,15 @@ export function FieldLedger({ fields, onFieldsChange }: FieldLedgerProps) {
 				/>
 			)}
 
-			{drawerOpen && <FieldDrawer onClose={() => setDrawerOpen(false)} />}
+			{drawerOpen && (
+				<FieldDrawer
+					onClose={() => setDrawerOpen(false)}
+					onSave={(field) => {
+						onFieldsChange([field, ...fields]);
+						setDrawerOpen(false);
+					}}
+				/>
+			)}
 		</div>
 	);
 }

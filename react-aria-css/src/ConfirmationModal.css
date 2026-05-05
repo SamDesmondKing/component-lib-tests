@@ -9,13 +9,14 @@
 }
 
 .confirmation-modal {
-	background: #1f2937;
+	background: var(--surface);
+	border: 1px solid var(--border);
 	border-radius: 12px;
 	padding: 1.5rem;
 	max-width: 400px;
 	width: 90vw;
 	outline: none;
-	color: #e5e7eb;
+	color: var(--text);
 }
 
 .confirmation-modal__title {
@@ -26,7 +27,7 @@
 .confirmation-modal__body {
 	margin: 0 0 1.25rem;
 	font-size: 0.875rem;
-	color: #9ca3af;
+	color: var(--text-muted);
 	line-height: 1.5;
 }
 
@@ -46,8 +47,8 @@
 }
 
 .confirmation-modal__btn--cancel {
-	background: #374151;
-	color: #e5e7eb;
+	background: var(--border);
+	color: var(--text);
 }
 
 .confirmation-modal__btn--confirm {

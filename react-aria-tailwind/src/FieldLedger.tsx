@@ -13,6 +13,8 @@ import { generateMockFields } from "./mockData";
 import { FloatingActionBar } from "./FloatingActionBar";
 import { ConfirmationModal } from "./ConfirmationModal";
 import { FieldDrawer } from "./FieldDrawer";
+import { ThemeToggle } from "./ThemeToggle";
+import { SummaryBar } from "./SummaryBar";
 import {
 	DndContext,
 	closestCenter,
@@ -155,10 +157,10 @@ export function FieldLedger() {
 	];
 
 	return (
-		<div className="flex h-screen flex-col bg-gray-950">
+		<div className="flex h-screen flex-col bg-white dark:bg-gray-950">
 			{/* Header */}
-			<div className="flex items-center gap-4 border-b border-gray-700 bg-gray-900 px-6 py-3">
-				<h1 className="text-lg font-semibold text-gray-100">
+			<div className="flex items-center gap-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-6 py-3">
+				<h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
 					Field Ledger - Tailwind
 				</h1>
 				<div className="flex-1" />
@@ -171,9 +173,10 @@ export function FieldLedger() {
 					<Label className="sr-only">Filter</Label>
 					<Input
 						placeholder="Search fields…"
-						className="w-64 rounded-lg border border-gray-600 bg-gray-800 px-3 py-1.5 text-sm text-gray-200 placeholder-gray-500 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+						className="w-64 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
 					/>
 				</TextField>
+				<ThemeToggle />
 				<Button
 					onPress={() => setDrawerOpen(true)}
 					className="rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-500"
@@ -181,6 +184,9 @@ export function FieldLedger() {
 					New Field
 				</Button>
 			</div>
+
+			{/* Summary Bar */}
+			<SummaryBar fields={fields} />
 
 			{/* Table */}
 			<DndContext
@@ -190,7 +196,7 @@ export function FieldLedger() {
 			>
 				<div className="flex-1 overflow-hidden px-6 py-4">
 					{/* Table header */}
-					<div className="flex items-center gap-2 rounded-t-lg border border-gray-700 bg-gray-800 px-3 py-2 text-xs font-medium text-gray-400 uppercase">
+					<div className="flex items-center gap-2 rounded-t-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
 						<div className="w-8" /> {/* drag handle spacer */}
 						<Checkbox
 							isSelected={
@@ -230,8 +236,8 @@ export function FieldLedger() {
 					{/* Virtualized rows */}
 					<div
 						ref={parentRef}
-						className="overflow-auto border-x border-b border-gray-700 bg-gray-900"
-						style={{ height: "calc(100vh - 160px)" }}
+						className="overflow-auto border-x border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
+						style={{ height: "calc(100vh - 220px)" }}
 					>
 						<SortableContext
 							items={filtered.map((f) => f.id)}
@@ -340,14 +346,14 @@ function SortableRow({
 		<div
 			ref={setNodeRef}
 			style={combinedStyle}
-			className={`flex items-center gap-2 border-b border-gray-800 px-3 text-sm ${
-				isSelected ? "bg-blue-950" : "hover:bg-gray-800"
+			className={`flex items-center gap-2 border-b border-gray-100 dark:border-gray-800 px-3 text-sm ${
+				isSelected ? "bg-blue-50 dark:bg-blue-950" : "hover:bg-gray-50 dark:hover:bg-gray-800"
 			} ${isDragging ? "shadow-lg" : ""}`}
 		>
 			<button
 				{...attributes}
 				{...listeners}
-				className="w-8 cursor-grab text-gray-500 hover:text-gray-300 active:cursor-grabbing"
+				className="w-8 cursor-grab text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 active:cursor-grabbing"
 				aria-label={`Reorder ${field.label}`}
 			>
 				⠿
@@ -370,17 +376,17 @@ function SortableRow({
 					</div>
 				)}
 			</Checkbox>
-			<span className={columns[0].width + " truncate text-gray-200"}>
+			<span className={columns[0].width + " truncate text-gray-800 dark:text-gray-200"}>
 				{field.label}
 			</span>
 			<span
 				className={
-					columns[1].width + " truncate text-gray-400 font-mono text-xs"
+					columns[1].width + " truncate text-gray-500 dark:text-gray-400 font-mono text-xs"
 				}
 			>
 				{field.name}
 			</span>
-			<span className={columns[2].width + " text-xs capitalize text-gray-300"}>
+			<span className={columns[2].width + " text-xs capitalize text-gray-700 dark:text-gray-300"}>
 				{field.type}
 			</span>
 			<span className={columns[3].width}>
@@ -394,7 +400,7 @@ function SortableRow({
 					{field.status}
 				</span>
 			</span>
-			<span className={columns[4].width + " text-xs text-gray-400 text-right"}>
+			<span className={columns[4].width + " text-xs text-gray-500 dark:text-gray-400 text-right"}>
 				{field.usageCount}
 			</span>
 		</div>

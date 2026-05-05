@@ -26,11 +26,19 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 		e.preventDefault();
 		const data = Object.fromEntries(new FormData(e.currentTarget));
 		setIsPending(true);
+
 		setTimeout(() => {
 			setIsPending(false);
-			setToast({ type: "success", message: "Welcome back" });
-			sessionStorage.setItem("auth_token", "mock-token");
-			setTimeout(onLogin, 800);
+			if (
+				data.email === "admin@example.com" &&
+				data.password === "password"
+			) {
+				setToast({ type: "success", message: "Welcome back" });
+				setTimeout(onLogin, 800);
+			} else {
+				setToast({ type: "error", message: "Invalid credentials" });
+				setTimeout(() => setToast(null), 3000);
+			}
 		}, 1000);
 	}
 
@@ -48,7 +56,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 						<Label>Email</Label>
 						<Input
 							className="login-page__input"
-							placeholder="you@example.com"
+							placeholder="admin@example.com"
 						/>
 						<FieldError />
 					</AriaTextField>

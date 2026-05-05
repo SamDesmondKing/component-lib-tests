@@ -2,7 +2,7 @@ export interface FieldRecord {
 	id: string;
 	label: string;
 	name: string;
-	type: "text" | "number" | "boolean" | "date" | "select";
+	type: "text" | "number" | "boolean" | "select";
 	validation: {
 		required: boolean;
 		min?: number;
