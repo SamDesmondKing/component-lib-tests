@@ -218,6 +218,15 @@ export const FieldDrawer = ({ opened, onClose }: FieldDrawerProps) => {
         </form>
         <Stack className={classes.preview} gap="md">
           <span className={classes.previewLabel}>Preview</span>
+          {form.values.type === "number" && (
+            <NumberInput
+              label={form.values.label || "Label"}
+              placeholder={form.values.placeholder || "Placeholder"}
+              min={form.values.min}
+              max={form.values.max}
+              decimalScale={form.values.decimalPlaces}
+            />
+          )}
         </Stack>
       </Group>
     </Drawer>
