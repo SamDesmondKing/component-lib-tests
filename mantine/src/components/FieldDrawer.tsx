@@ -6,6 +6,7 @@ import {
   Drawer,
   Group,
   NativeSelect,
+  NumberInput,
   Stack,
   TextInput,
   Title,
@@ -13,6 +14,7 @@ import {
 import { useForm } from "@mantine/form";
 
 import { useAppStore, type Field } from "../store";
+import classes from "./FieldDrawer.module.css";
 
 type FieldDrawerProps = {
   opened: boolean;
@@ -103,119 +105,121 @@ export const FieldDrawer = ({ opened, onClose }: FieldDrawerProps) => {
       closeOnClickOutside
       withOverlay
     >
-      <form onSubmit={handleSubmit}>
-        <Stack>
-          <TextInput
-            label="Label"
-            placeholder="e.g. First Name"
-            required
-            {...form.getInputProps("label")}
-            onChange={(e) => {
-              form.getInputProps("label").onChange(e);
-              if (!isNameManuallyEdited.current) {
-                form.setFieldValue("name", slugify(e.currentTarget.value));
-              }
-            }}
-          />
-          <TextInput
-            label="Name (slug)"
-            {...form.getInputProps("name")}
-            onChange={(e) => {
-              isNameManuallyEdited.current = true;
-              form.getInputProps("name").onChange(e);
-            }}
-          />
-          <NativeSelect
-            label="Type"
-            data={["text", "number", "boolean", "select"]}
-            {...form.getInputProps("type")}
-          />
-          <NativeSelect
-            label="Status"
-            data={["active", "inactive"]}
-            {...form.getInputProps("status")}
-          />
-          <TextInput
-            label="Placeholder"
-            placeholder="Optional placeholder text"
-            {...form.getInputProps("placeholder")}
-          />
-          {form.values.type === "text" && (
-            <>
-              <TextInput
-                label="Pattern (regex)"
-                placeholder="e.g. ^[a-z]+$"
-                {...form.getInputProps("pattern")}
-              />
-              <TextInput
-                label="Max Length"
-                placeholder="Maximum character length"
-                type="number"
-                {...form.getInputProps("maxLength")}
-              />
-            </>
-          )}
-          {form.values.type === "number" && (
-            <>
-              <TextInput
-                label="Min"
-                placeholder="Minimum value"
-                type="number"
-                {...form.getInputProps("min")}
-              />
-              <TextInput
-                label="Max"
-                placeholder="Maximum value"
-                type="number"
-                {...form.getInputProps("max")}
-              />
-              <TextInput
-                label="Decimal places"
-                placeholder="Decimal places"
-                type="number"
-                {...form.getInputProps("decimalPlaces")}
-              />
-            </>
-          )}
-          {form.values.type === "select" && (
-            <Stack gap="xs">
-              <TextInput
-                label="Options"
-                placeholder="Add an option"
-                value={newOption}
-                onChange={(e) => setNewOption(e.currentTarget.value)}
-                rightSection={
-                  <ActionIcon
-                    size="sm"
-                    onClick={addOption}
-                    aria-label="Add option"
-                  >
-                    +
-                  </ActionIcon>
+      <Group align="flex-start" gap="xl">
+        <form onSubmit={handleSubmit}>
+          <Stack>
+            <TextInput
+              label="Label"
+              placeholder="e.g. First Name"
+              required
+              {...form.getInputProps("label")}
+              onChange={(e) => {
+                form.getInputProps("label").onChange(e);
+                if (!isNameManuallyEdited.current) {
+                  form.setFieldValue("name", slugify(e.currentTarget.value));
                 }
-              />
-              {options.map((opt, index) => (
-                <Group key={`${opt}`} gap="xs">
-                  <TextInput value={opt} disabled style={{ flex: 1 }} />
-                  <ActionIcon
-                    color="red"
-                    variant="light"
-                    onClick={() => removeOption(index)}
-                    aria-label={`Remove ${opt}`}
-                  >
-                    ×
-                  </ActionIcon>
-                </Group>
-              ))}
-            </Stack>
-          )}
-          <Checkbox
-            label="Required"
-            {...form.getInputProps("required", { type: "checkbox" })}
-          />
-          <Button type="submit">Create Field</Button>
+              }}
+            />
+            <TextInput
+              label="Name (slug)"
+              {...form.getInputProps("name")}
+              onChange={(e) => {
+                isNameManuallyEdited.current = true;
+                form.getInputProps("name").onChange(e);
+              }}
+            />
+            <NativeSelect
+              label="Type"
+              data={["text", "number", "boolean", "select"]}
+              {...form.getInputProps("type")}
+            />
+            <NativeSelect
+              label="Status"
+              data={["active", "inactive"]}
+              {...form.getInputProps("status")}
+            />
+            <TextInput
+              label="Placeholder"
+              placeholder="Optional placeholder text"
+              {...form.getInputProps("placeholder")}
+            />
+            {form.values.type === "text" && (
+              <>
+                <TextInput
+                  label="Pattern (regex)"
+                  placeholder="e.g. ^[a-z]+$"
+                  {...form.getInputProps("pattern")}
+                />
+                <TextInput
+                  label="Max Length"
+                  placeholder="Maximum character length"
+                  type="number"
+                  {...form.getInputProps("maxLength")}
+                />
+              </>
+            )}
+            {form.values.type === "number" && (
+              <>
+                <NumberInput
+                  label="Min"
+                  placeholder="Minimum value"
+                  {...form.getInputProps("min")}
+                />
+                <NumberInput
+                  label="Max"
+                  placeholder="Maximum value"
+                  {...form.getInputProps("max")}
+                />
+                <NumberInput
+                  label="Decimal places"
+                  placeholder="Decimal places"
+                  {...form.getInputProps("decimalPlaces")}
+                />
+              </>
+            )}
+            {form.values.type === "select" && (
+              <Stack gap="xs">
+                <TextInput
+                  label="Options"
+                  placeholder="Add an option"
+                  value={newOption}
+                  onChange={(e) => setNewOption(e.currentTarget.value)}
+                  rightSection={
+                    <ActionIcon
+                      size="sm"
+                      onClick={addOption}
+                      aria-label="Add option"
+                    >
+                      +
+                    </ActionIcon>
+                  }
+                />
+                {options.map((opt, index) => (
+                  <Group key={`${opt}`} gap="xs">
+                    <TextInput value={opt} disabled style={{ flex: 1 }} />
+                    <ActionIcon
+                      color="red"
+                      variant="light"
+                      onClick={() => removeOption(index)}
+                      aria-label={`Remove ${opt}`}
+                    >
+                      ×
+                    </ActionIcon>
+                  </Group>
+                ))}
+              </Stack>
+            )}
+            <Checkbox
+              label="Required"
+              {...form.getInputProps("required", { type: "checkbox" })}
+            />
+            <Button type="submit">Create Field</Button>
+          </Stack>
+        </form>
+        <Stack className={classes.preview} gap="md">
+          <span className={classes.previewLabel}>Preview</span>
         </Stack>
-      </form>
+      </Group>
     </Drawer>
   );
 };
