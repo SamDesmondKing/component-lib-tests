@@ -8,6 +8,7 @@ import {
   NativeSelect,
   NumberInput,
   Stack,
+  Switch,
   TextInput,
   Title,
 } from "@mantine/core";
@@ -225,12 +226,20 @@ export const FieldDrawer = ({ opened, onClose }: FieldDrawerProps) => {
               min={form.values.min}
               max={form.values.max}
               decimalScale={form.values.decimalPlaces}
+              disabled={form.values.status === "inactive" || false}
             />
           )}
           {form.values.type === "text" && (
             <TextInput
               label={form.values.label || "Label"}
               placeholder={form.values.placeholder || "Placeholder"}
+              disabled={form.values.status === "inactive" || false}
+            />
+          )}
+          {form.values.type === "boolean" && (
+            <Switch
+              label={form.values.label || "Label"}
+              disabled={form.values.status === "inactive" || false}
             />
           )}
         </Stack>
