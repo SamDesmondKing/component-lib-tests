@@ -1,0 +1,39 @@
+.root {
+  background: linear-gradient(135deg, #228be6 0%, #7048e8 50%, #845ef7 100%);
+  color: white;
+  border-radius: var(--mantine-radius-lg);
+  padding: var(--mantine-spacing-lg) var(--mantine-spacing-xl);
+  box-shadow:
+    0 10px 30px -5px rgba(34, 139, 230, 0.3),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-mantine-color-scheme="dark"] .root {
+  background: linear-gradient(135deg, #1c7ed6 0%, #5f3dc4 50%, #7048e8 100%);
+  box-shadow:
+    0 10px 30px -5px rgba(0, 0, 0, 0.4),
+    0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+.stat {
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-lg);
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: var(--mantine-radius-md);
+  backdrop-filter: blur(4px);
+  min-width: 140px;
+}
+
+.statLabel {
+  font-size: var(--mantine-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.85;
+  font-weight: 500;
+}
+
+.statValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
