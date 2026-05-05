@@ -7,6 +7,7 @@ import {
   Group,
   NativeSelect,
   NumberInput,
+  Select,
   Stack,
   Switch,
   TextInput,
@@ -240,6 +241,14 @@ export const FieldDrawer = ({ opened, onClose }: FieldDrawerProps) => {
             <Switch
               label={form.values.label || "Label"}
               disabled={form.values.status === "inactive" || false}
+            />
+          )}
+          {form.values.type === "select" && (
+            <Select
+              label={form.values.label || "Label"}
+              disabled={form.values.status === "inactive" || false}
+              placeholder={form.values.placeholder || "Placeholder"}
+              data={options}
             />
           )}
         </Stack>
