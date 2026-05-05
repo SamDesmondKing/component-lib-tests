@@ -63,7 +63,9 @@ export const FieldDrawer = ({ opened, onClose }: FieldDrawerProps) => {
 
     try {
       const regex = new RegExp(form.values.pattern);
-      return regex.test(previewTextValue) ? null : "Value does not match pattern";
+      return regex.test(previewTextValue)
+        ? null
+        : "Value does not match pattern";
     } catch {
       return "Invalid regex pattern";
     }
@@ -242,6 +244,7 @@ export const FieldDrawer = ({ opened, onClose }: FieldDrawerProps) => {
               max={form.values.max}
               decimalScale={form.values.decimalPlaces}
               disabled={form.values.status === "inactive" || false}
+              required={form.values.required}
             />
           )}
           {form.values.type === "text" && (
@@ -249,15 +252,19 @@ export const FieldDrawer = ({ opened, onClose }: FieldDrawerProps) => {
               label={form.values.label || "Label"}
               placeholder={form.values.placeholder || "Placeholder"}
               value={previewTextValue}
-              onChange={(event) => setPreviewTextValue(event.currentTarget.value)}
+              onChange={(event) =>
+                setPreviewTextValue(event.currentTarget.value)
+              }
               error={previewTextError}
               disabled={form.values.status === "inactive" || false}
+              required={form.values.required}
             />
           )}
           {form.values.type === "boolean" && (
             <Switch
               label={form.values.label || "Label"}
               disabled={form.values.status === "inactive" || false}
+              required={form.values.required}
             />
           )}
           {form.values.type === "select" && (
@@ -266,6 +273,7 @@ export const FieldDrawer = ({ opened, onClose }: FieldDrawerProps) => {
               disabled={form.values.status === "inactive" || false}
               placeholder={form.values.placeholder || "Placeholder"}
               data={options}
+              required={form.values.required}
             />
           )}
         </Stack>
