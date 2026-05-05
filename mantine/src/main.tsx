@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/style/noNonNullAssertion: toy app */
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { StrictMode } from "react";

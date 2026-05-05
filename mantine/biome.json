@@ -1,12 +1,18 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.14/schema.json",
   "files": {
-    "includes": ["src/**", "*.ts", "*.tsx", "*.json", "*.css"]
+    "includes": [
+      "src/**",
+      "*.ts",
+      "*.tsx",
+      "*.json",
+      "*.css"
+    ]
   },
   "assist": {
     "actions": {
       "source": {
-        "organizeImports": "on"
+        "organizeImports": "off"
       }
     }
   },
