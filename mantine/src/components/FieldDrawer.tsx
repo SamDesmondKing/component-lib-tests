@@ -34,6 +34,7 @@ export const FieldDrawer = ({ opened, onClose }: FieldDrawerProps) => {
   const addField = useAppStore((s) => s.addField);
   const [options, setOptions] = useState<string[]>([]);
   const [newOption, setNewOption] = useState("");
+  const [previewTextValue, setPreviewTextValue] = useState("");
   const isNameManuallyEdited = useRef(false);
 
   const form = useForm({
@@ -54,6 +55,19 @@ export const FieldDrawer = ({ opened, onClose }: FieldDrawerProps) => {
       label: (value) => (value.trim() ? null : "Label is required"),
     },
   });
+
+  const previewTextError = (() => {
+    if (!form.values.pattern || previewTextValue.trim() === "") {
+      return null;
+    }
+
+    try {
+      const regex = new RegExp(form.values.pattern);
+      return regex.test(previewTextValue) ? null : "Value does not match pattern";
+    } catch {
+      return "Invalid regex pattern";
+    }
+  })();
 
   const addOption = () => {
     if (newOption.trim()) {
@@ -234,6 +248,9 @@ export const FieldDrawer = ({ opened, onClose }: FieldDrawerProps) => {
             <TextInput
               label={form.values.label || "Label"}
               placeholder={form.values.placeholder || "Placeholder"}
+              value={previewTextValue}
+              onChange={(event) => setPreviewTextValue(event.currentTarget.value)}
+              error={previewTextError}
               disabled={form.values.status === "inactive" || false}
             />
           )}
