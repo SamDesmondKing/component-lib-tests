@@ -227,6 +227,12 @@ export const FieldDrawer = ({ opened, onClose }: FieldDrawerProps) => {
               decimalScale={form.values.decimalPlaces}
             />
           )}
+          {form.values.type === "text" && (
+            <TextInput
+              label={form.values.label || "Label"}
+              placeholder={form.values.placeholder || "Placeholder"}
+            />
+          )}
         </Stack>
       </Group>
     </Drawer>
