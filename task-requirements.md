@@ -1,10 +1,8 @@
 # Project Specification: The Schema Architect
 
-**Objective:** A high-density administrative tool for defining, validating, and previewing dynamic custom data fields. 
+**Objective:** A high-density administrative tool for defining, validating, and previewing dynamic custom data fields.
 
-This project should be built using the react-aria component library and tailwind css.
-
-The majority of each implementation (~90%) is to be built by co-pilot. A small set of stories are written by hand to capture the real developer experience of each framework. Stories are tagged `[scaffold]` or `[manual]` accordingly.
+The majority of each implementation (~90%) is scaffolded by an LLM. A small set of stories are written by hand to capture the real developer experience of each framework. Stories are tagged `[scaffold]` or `[manual]` accordingly.
 
 ---
 
@@ -16,7 +14,7 @@ Each field created in the app should conform to this structure to ensure consist
   "id": "uuid",
   "label": "string",
   "name": "string (slug)",
-  "type": "text | number | boolean | date | select",
+  "type": "text | number | boolean | select",
   "validation": {
     "required": "boolean",
     "min": "number",
@@ -27,13 +25,6 @@ Each field created in the app should conform to this structure to ensure consist
     "placeholder": "string",
     "defaultValue": "any",
     "options": ["string"] // Only for 'select' type
-  },
-  "logic": {
-    "visibleIf": {
-      "field": "string (id)",
-      "operator": "equals | contains | filled",
-      "value": "any"
-    }
   },
   "status": "active | inactive",
   "usageCount": "number"
@@ -99,11 +90,10 @@ Each field created in the app should conform to this structure to ensure consist
     - Form always shows: Label, Name (auto-slugified from Label), Type (select), Status, Placeholder, Default Value, Required (checkbox)
     - Selecting `number` reveals: Min, Max, Decimal Places
     - Selecting `select` reveals: Options (a dynamic list where items can be added/removed)
-    - Selecting `date` reveals: Min Date, Max Date
     - Selecting `text` reveals: Pattern (regex), Max Length
     - Selecting `boolean` hides all type-specific fields
     - Name field auto-populates as a slug of Label but remains manually editable
-  - *Components:* Text input, select/combobox, checkbox, number input, dynamic list (add/remove), date input
+  - *Components:* Text input, select/combobox, checkbox, number input, dynamic list (add/remove)
   - *Data Flow:* Form state is a single object matching the core JSON schema. Type change resets type-specific fields to their defaults.
   - *DX Note:* Tests how naturally the framework handles controlled, conditional form state without a dedicated form library.
 
@@ -114,25 +104,13 @@ Each field created in the app should conform to this structure to ensure consist
     - Preview updates in real time as Label, Placeholder, Default Value, and Options are edited
     - Preview component reflects the `required` and `disabled` states
     - Preview is visually distinguished (e.g., subtle background, "Preview" label)
-  - *Components:* Split layout, all input types (text, number, boolean, date, select)
+  - *Components:* Split layout, all input types (text, number, boolean, select)
   - *Data Flow:* Editor and Preview share the same form state object — no synchronisation layer needed. Preview reads directly from live form values.
   - *DX Note:* Tests how cleanly the framework enables real-time derived UI from shared state.
 
 ---
 
 ### Epic 4: Advanced Interaction
-
-- **Nested Rule Builder** `[manual]` — As an admin, I want to create "Visibility Rules" (e.g., "Show X if Y equals Z").
-  - *Acceptance Criteria:*
-    - A "Visibility Rule" section appears at the bottom of the field configuration form
-    - Toggle to enable/disable the rule
-    - When enabled, shows three controls: Field (select — lists all existing field names), Operator (select — `equals | contains | filled`), Value (text input, hidden when operator is `filled`)
-    - Selecting `filled` as the operator hides the Value input
-    - The rule is serialised into the `logic.visibleIf` object on the field schema
-    - Invalid state: if rule is enabled but Field is not selected, show an inline error on save
-  - *Components:* Toggle/switch, select/combobox, text input, conditional rendering, inline error
-  - *Data Flow:* Rule state is a nested object within the form state (`logic.visibleIf`). Operator change conditionally nulls out `value`.
-  - *DX Note:* Tests nested conditional state, dynamic option lists (populated from sibling records), and inline validation — the three patterns most likely to expose framework friction.
 
 - **Drag-and-Drop Reordering** `[scaffold]` — As an admin, I want to drag and drop fields to change their display order.
   - *Acceptance Criteria:*
@@ -145,3 +123,48 @@ Each field created in the app should conform to this structure to ensure consist
 
 ---
 
+### Epic 5: Look & Feel
+
+- **Theme Switching** `[scaffold]` — As an admin, I want to toggle between Light and Dark modes so that I can work comfortably in any lighting condition.
+  - *Acceptance Criteria:*
+    - A theme toggle exists in the top header
+    - Switching themes updates the entire UI instantly without a page reload
+    - Theme preference persists in localStorage and defaults to system preference
+    - Prevention of "Flash of Unstyled Content" (FOUC) on initial load
+  - *Components:* Switch/Toggle, Icon (Sun/Moon)
+  - *Data Flow:* Global theme state (light/dark) synchronised with `document.documentElement` and localStorage.
+
+- **Custom-Styled Summary Bar** `[scaffold]` — As a developer, I want to see how to apply custom, non-theme styles to a specific component using the framework's underlying styling engine.
+  - *Acceptance Criteria:*
+    - A "Summary Bar" appears above the Field Ledger table.
+    - The bar must be styled using the framework's primary styling engine (e.g., Tailwind, CSS Modules, or CSS-in-JS) rather than just standard theme properties.
+    - It must feature a custom gradient background, specific padding, and a unique border/shadow to distinguish it from standard cards.
+    - It displays a count of "Total Fields" and "Active Fields".
+  - *Components:* Summary Bar (Custom Component)
+  - *Data Flow:* Reads from the same field state as the table.
+
+---
+
+## 3. Framework Benchmarks (Success Criteria)
+
+Each criterion is evaluated identically across all four frameworks.
+
+| Criterion | Measure |
+| :--- | :--- |
+| **Setup Speed** | Lines of code required to implement the Rule Builder from scratch |
+| **Accessibility** | All interactive components in the Rule Builder pass a screen reader audit |
+| **Performance** | Field table remains responsive at 1,000+ rows with sorting and filtering active |
+| **Customizability** | Number of files modified to apply a custom brand theme across all components |
+| **Bundle Size** | Gzipped `dist/` size after a production build with all benchmark features implemented |
+| **Developer Experience** | Friction rating (1=painful, 5=effortless) when implementing the three `[manual]` stories |
+
+### Results
+
+| Criterion | Mantine v8 | shadcn/ui | RAC + Tailwind | JollyUI |
+| :--- | :---: | :---: | :---: | :---: |
+| **Setup Speed** (loc) | — | — | — | — |
+| **Accessibility** (pass/fail) | — | — | — | — |
+| **Performance** (pass/fail) | — | — | — | — |
+| **Customizability** (files) | — | — | — | — |
+| **Bundle Size** (kb gzipped) | — | — | — | — |
+| **Developer Experience** (1–5) | — | — | — | — |
