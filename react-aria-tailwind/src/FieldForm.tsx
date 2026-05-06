@@ -526,6 +526,85 @@ export const FieldForm = ({ onSave }: FieldFormProps) => {
 						</NumberField>
 					</div>
 				)}
+
+				{field.type === "text" && (
+					<div className="mt-4 rounded-lg border border-gray-700 bg-gray-950/60 p-4">
+						<p className="tracking-wide text-gray-600">
+							{field.label || "Label"}
+						</p>
+						<TextField
+							isRequired={field.validation.required}
+							isDisabled={field.status === "inactive"}
+							validationBehavior="aria"
+							validate={(value) => {
+								if (field.validation.pattern) {
+									try {
+										const re = new RegExp(field.validation.pattern);
+										if (value && !re.test(value)) {
+											return `Value must match pattern: ${field.validation.pattern}`;
+										}
+									} catch {
+										// invalid regex, skip validation
+									}
+								}
+								return true;
+							}}
+							className="mt-3 flex flex-col gap-1"
+						>
+							<Label className={labelClass}>Value</Label>
+							<Input
+								className={inputClass}
+								placeholder={field.config.placeholder || "Enter text"}
+								maxLength={field.maxLength}
+							/>
+							<FieldError className="mt-2 text-xs text-red-400" />
+						</TextField>
+					</div>
+				)}
+
+				{field.type === "select" && (
+					<div className="mt-4 rounded-lg border border-gray-700 bg-gray-950/60 p-4">
+						<p className="tracking-wide text-gray-600">
+							{field.label || "Label"}
+						</p>
+						<Select
+							isRequired={field.validation.required}
+							isDisabled={field.status === "inactive"}
+							placeholder={field.config.placeholder || "Choose an option"}
+							className="mt-3 flex flex-col gap-1"
+						>
+							<Label className={labelClass}>Value</Label>
+							<Button
+								className={`${inputClass} flex items-center justify-between text-left`}
+							>
+								<SelectValue />
+								<span>▾</span>
+							</Button>
+							<Popover className="w-(--trigger-width) rounded-lg border border-gray-600 bg-gray-800 shadow-lg">
+								<ListBox className="p-1">
+									{(field.config.options ?? []).length > 0 ? (
+										field.config.options.map((opt) => (
+											<ListBoxItem
+												key={opt}
+												id={opt}
+												className="cursor-pointer rounded px-3 py-1.5 text-sm text-gray-200 hover:bg-gray-700 data-[focused]:bg-gray-700"
+											>
+												{opt}
+											</ListBoxItem>
+										))
+									) : (
+										<ListBoxItem
+											id="__empty"
+											className="px-3 py-1.5 text-sm italic text-gray-500"
+										>
+											No options defined
+										</ListBoxItem>
+									)}
+								</ListBox>
+							</Popover>
+						</Select>
+					</div>
+				)}
 			</aside>
 		</div>
 	);
