@@ -10,6 +10,7 @@ import {
 	ListBox,
 	ListBoxItem,
 	Checkbox,
+	NumberField,
 } from "react-aria-components";
 import type { FieldSchema, FieldType, FieldStatus } from "./types";
 
@@ -17,12 +18,7 @@ interface FieldFormProps {
 	onSave: (field: FieldSchema) => void;
 }
 
-const FIELD_TYPES: FieldType[] = [
-	"text",
-	"number",
-	"boolean",
-	"select",
-];
+const FIELD_TYPES: FieldType[] = ["text", "number", "boolean", "select"];
 const STATUSES: FieldStatus[] = ["active", "inactive"];
 
 function slugify(s: string): string {
@@ -75,14 +71,88 @@ export function FieldForm({ onSave }: FieldFormProps) {
 		setField((prev) => ({
 			...prev,
 			type,
+			validation: {
+				...prev.validation,
+				pattern: undefined,
+			},
 			config: {
 				...prev.config,
-				options: type === "select" ? ["Option A", "Option B"] : [],
+				options: type === "select" ? prev.config.options : [],
 			},
 			min: undefined,
 			max: undefined,
 			decimalPlaces: undefined,
 			maxLength: undefined,
+		}));
+	};
+
+	const handleMinChange = (value: number) => {
+		setField((prev) => ({
+			...prev,
+			min: Number.isFinite(value) ? value : undefined,
+		}));
+	};
+
+	const handleMaxChange = (value: number) => {
+		setField((prev) => ({
+			...prev,
+			max: Number.isFinite(value) ? value : undefined,
+		}));
+	};
+
+	const handleDecimalPlacesChange = (value: number) => {
+		setField((prev) => ({
+			...prev,
+			decimalPlaces: Number.isFinite(value) ? value : undefined,
+		}));
+	};
+
+	const handlePatternChange = (value: string) => {
+		setField((prev) => ({
+			...prev,
+			validation: {
+				...prev.validation,
+				pattern: value || undefined,
+			},
+		}));
+	};
+
+	const handleMaxLengthChange = (value: number) => {
+		setField((prev) => ({
+			...prev,
+			maxLength: Number.isFinite(value) ? value : undefined,
+		}));
+	};
+
+	const handleOptionChange = (index: number, value: string) => {
+		setField((prev) => ({
+			...prev,
+			config: {
+				...prev.config,
+				options: prev.config.options.map((option, optionIndex) =>
+					optionIndex === index ? value : option,
+				),
+			},
+		}));
+	};
+
+	const handleAddOption = () => {
+		setField((prev) => ({
+			...prev,
+			config: {
+				...prev.config,
+				options: [...prev.config.options, ""],
+			},
+		}));
+	};
+
+	const handleRemoveOption = (index: number) => {
+		setField((prev) => ({
+			...prev,
+			config: {
+				...prev.config,
+				options: prev.config.options.filter((_, optionIndex) => optionIndex !== index),
+			},
 		}));
 	};
 
@@ -115,7 +185,7 @@ export function FieldForm({ onSave }: FieldFormProps) {
 			>
 				<Label className={labelClass}>Name (slug)</Label>
 				<Input
-					className={inputClass + " font-mono text-xs"}
+					className={`${inputClass} font-mono text-xs`}
 					placeholder="field_name"
 				/>
 			</TextField>
@@ -128,9 +198,7 @@ export function FieldForm({ onSave }: FieldFormProps) {
 			>
 				<Label className={labelClass}>Type</Label>
 				<Button
-					className={
-						inputClass + " flex items-center justify-between text-left"
-					}
+					className={`${inputClass} flex items-center justify-between text-left`}
 				>
 					<SelectValue />
 					<span>▾</span>
@@ -150,6 +218,120 @@ export function FieldForm({ onSave }: FieldFormProps) {
 				</Popover>
 			</Select>
 
+			{field.type === "number" && (
+				<>
+					<NumberField
+						name="min"
+						value={field.min}
+						onChange={handleMinChange}
+						maxValue={field.max}
+						className="flex flex-col gap-1"
+					>
+						<Label className={labelClass}>Min</Label>
+						<Input
+							className={inputClass}
+							placeholder="Enter the min"
+							inputMode="decimal"
+						/>
+					</NumberField>
+					<NumberField
+						name="max"
+						value={field.max}
+						onChange={handleMaxChange}
+						minValue={field.min}
+						className="flex flex-col gap-1"
+					>
+						<Label className={labelClass}>Max</Label>
+						<Input
+							className={inputClass}
+							placeholder="Enter the max"
+							inputMode="decimal"
+						/>
+					</NumberField>
+					<NumberField
+						name="decimalPlaces"
+						value={field.decimalPlaces}
+						onChange={handleDecimalPlacesChange}
+						minValue={0}
+						step={1}
+						formatOptions={{ maximumFractionDigits: 0 }}
+						className="flex flex-col gap-1"
+					>
+						<Label className={labelClass}>Decimal places</Label>
+						<Input
+							className={inputClass}
+							placeholder="Enter the decimal places"
+							inputMode="numeric"
+						/>
+					</NumberField>
+				</>
+			)}
+
+			{field.type === "text" && (
+				<>
+					<TextField
+						name="pattern"
+						value={field.validation.pattern ?? ""}
+						onChange={handlePatternChange}
+						className="flex flex-col gap-1"
+					>
+						<Label className={labelClass}>Pattern</Label>
+						<Input className={inputClass} placeholder="Field pattern" />
+					</TextField>
+					<NumberField
+						name="maxLength"
+						value={field.maxLength}
+						onChange={handleMaxLengthChange}
+						minValue={0}
+						step={1}
+						formatOptions={{ maximumFractionDigits: 0 }}
+						className="flex flex-col gap-1"
+					>
+						<Label className={labelClass}>Max Length</Label>
+						<Input
+							className={inputClass}
+							placeholder="Field max length"
+							inputMode="numeric"
+						/>
+					</NumberField>
+				</>
+			)}
+
+			{field.type === "select" && (
+				<div className="flex flex-col gap-3">
+					<div className="flex items-center justify-between">
+						<Label className={labelClass}>Dropdown options</Label>
+						<Button
+							type="button"
+							onPress={handleAddOption}
+							className="rounded-lg border border-gray-600 px-3 py-1.5 text-sm text-gray-200 hover:bg-gray-800"
+						>
+							Add option
+						</Button>
+					</div>
+					{field.config.options.map((option, index) => (
+						<div key={`${field.id}-option-${index}`} className="flex items-end gap-2">
+							<TextField
+								name={`option-${index + 1}`}
+								value={option}
+								onChange={(value) => handleOptionChange(index, value)}
+								className="flex-1 flex flex-col gap-1"
+							>
+								<Label className={labelClass}>Option {index + 1}</Label>
+								<Input className={inputClass} placeholder={`Option ${index + 1}`} />
+							</TextField>
+							<Button
+								type="button"
+								onPress={() => handleRemoveOption(index)}
+								className="rounded-lg border border-gray-600 px-3 py-1.5 text-sm text-gray-200 hover:bg-gray-800"
+							>
+								Remove
+							</Button>
+						</div>
+					))}
+				</div>
+			)}
+
 			{/* Status */}
 			<Select
 				selectedKey={field.status}
@@ -160,9 +342,7 @@ export function FieldForm({ onSave }: FieldFormProps) {
 			>
 				<Label className={labelClass}>Status</Label>
 				<Button
-					className={
-						inputClass + " flex items-center justify-between text-left"
-					}
+					className={`${inputClass} flex items-center justify-between text-left`}
 				>
 					<SelectValue />
 					<span>▾</span>
@@ -228,23 +408,6 @@ export function FieldForm({ onSave }: FieldFormProps) {
 				</div>
 				<span className="text-sm text-gray-300">Required</span>
 			</Checkbox>
-
-			{/* ── Type-specific fields placeholder ── */}
-			{/* [manual] TASK-5: Conditional Configuration — implement type-specific fields here */}
-			<div className="rounded-lg border border-dashed border-gray-600 p-4">
-				<p className="text-xs text-gray-500">
-					Type-specific fields for "{field.type}" go here. (Manual
-					implementation — TASK-5)
-				</p>
-			</div>
-
-			{/* ── Visibility Rule placeholder ── */}
-			{/* [manual] TASK-7: Nested Rule Builder — implement visibility rules here */}
-			<div className="rounded-lg border border-dashed border-gray-600 p-4">
-				<p className="text-xs text-gray-500">
-					Visibility Rule section goes here. (Manual implementation — TASK-7)
-				</p>
-			</div>
 
 			<Button
 				type="submit"
