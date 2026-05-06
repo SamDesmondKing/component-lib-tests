@@ -56,17 +56,31 @@ export const FieldDrawer = ({ open, onOpenChange }: FieldDrawerProps) => {
   const [form, setForm] = useState(INITIAL);
   const [nameEdited, setNameEdited] = useState(false);
   const [previewValue, setPreviewValue] = useState("");
+  const [previewNumberValue, setPreviewNumberValue] = useState("");
   const options = form.options ?? [];
   const optionDraft = form.optionDraft ?? "";
   const maxLengthNumber = Number(form.maxLength);
+  const minNumber = Number(form.min);
+  const maxNumber = Number(form.max);
+  const decimalPlacesNumber = Number(form.decimalPlaces);
   const resolvedMaxLength =
     form.maxLength.trim() !== "" &&
     Number.isInteger(maxLengthNumber) &&
     maxLengthNumber >= 0
       ? maxLengthNumber
       : undefined;
+  const resolvedMin =
+    form.min.trim() !== "" && !Number.isNaN(minNumber) ? minNumber : undefined;
+  const resolvedMax =
+    form.max.trim() !== "" && !Number.isNaN(maxNumber) ? maxNumber : undefined;
+  const resolvedDecimalPlaces =
+    form.decimalPlaces.trim() !== "" &&
+    Number.isInteger(decimalPlacesNumber) &&
+    decimalPlacesNumber >= 0
+      ? decimalPlacesNumber
+      : undefined;
 
-  const previewValidationMessage = (() => {
+  const previewValidationMessage = () => {
     if (form.type !== "text") {
       return undefined;
     }
@@ -89,13 +103,50 @@ export const FieldDrawer = ({ open, onOpenChange }: FieldDrawerProps) => {
     }
 
     return undefined;
-  })();
+  };
+
+  const previewNumberValidationMessage = () => {
+    const parsedPreviewNumber = Number(previewNumberValue);
+
+    if (
+      resolvedMin !== undefined &&
+      resolvedMax !== undefined &&
+      resolvedMin > resolvedMax
+    ) {
+      return "Min cannot be greater than max.";
+    }
+
+    if (resolvedMin !== undefined && parsedPreviewNumber < resolvedMin) {
+      return `Value must be at least ${resolvedMin}.`;
+    }
+
+    if (resolvedMax !== undefined && parsedPreviewNumber > resolvedMax) {
+      return `Value must be at most ${resolvedMax}.`;
+    }
+
+    if (resolvedDecimalPlaces !== undefined) {
+      const fractionalPart = previewNumberValue.split(".")[1] ?? "";
+      if (fractionalPart.length > resolvedDecimalPlaces) {
+        return `Value can have at most ${resolvedDecimalPlaces} decimal places.`;
+      }
+    }
+
+    return undefined;
+  };
+
+  const previewNumberStep =
+    resolvedDecimalPlaces === undefined
+      ? "any"
+      : resolvedDecimalPlaces === 0
+        ? 1
+        : Number(`0.${"0".repeat(resolvedDecimalPlaces - 1)}1`);
 
   useEffect(() => {
     if (!open) {
       setForm(INITIAL);
       setNameEdited(false);
       setPreviewValue("");
+      setPreviewNumberValue("");
     }
   }, [open]);
 
@@ -107,6 +158,25 @@ export const FieldDrawer = ({ open, onOpenChange }: FieldDrawerProps) => {
       setPreviewValue(previewValue.slice(0, resolvedMaxLength));
     }
   }, [previewValue, resolvedMaxLength]);
+
+  useEffect(() => {
+    if (resolvedDecimalPlaces === undefined) {
+      return;
+    }
+
+    const fractionalPart = previewNumberValue.split(".")[1] ?? "";
+    if (fractionalPart.length <= resolvedDecimalPlaces) {
+      return;
+    }
+
+    const [integerPart, currentFractionalPart = ""] =
+      previewNumberValue.split(".");
+    const nextValue =
+      resolvedDecimalPlaces === 0
+        ? integerPart
+        : `${integerPart}.${currentFractionalPart.slice(0, resolvedDecimalPlaces)}`;
+    setPreviewNumberValue(nextValue);
+  }, [previewNumberValue, resolvedDecimalPlaces]);
 
   const handleLabelChange = (value: string) => {
     setForm((currentForm) => ({
@@ -457,9 +527,9 @@ export const FieldDrawer = ({ open, onOpenChange }: FieldDrawerProps) => {
                     placeholder={form.placeholder}
                     disabled={form.status === "inactive"}
                   />
-                  {previewValidationMessage && (
+                  {previewValidationMessage() && (
                     <p className="text-xs text-destructive">
-                      {previewValidationMessage}
+                      {previewValidationMessage()}
                     </p>
                   )}
                 </div>
@@ -497,7 +567,38 @@ export const FieldDrawer = ({ open, onOpenChange }: FieldDrawerProps) => {
                   </Select>
                 </div>
               )}
-              {form.type === "number" && <div></div>}
+              {form.type === "number" && (
+                <div className="space-y-2 mt-3">
+                  <Label htmlFor="preview-number-input">
+                    {form.label || "Label"}
+                  </Label>
+                  <Input
+                    id="preview-number-input"
+                    type="number"
+                    value={previewNumberValue}
+                    onChange={(event) => {
+                      const nextValue = event.target.value;
+                      if (resolvedDecimalPlaces !== undefined) {
+                        const fractionalPart = nextValue.split(".")[1] ?? "";
+                        if (fractionalPart.length > resolvedDecimalPlaces) {
+                          return;
+                        }
+                      }
+                      setPreviewNumberValue(nextValue);
+                    }}
+                    min={resolvedMin}
+                    max={resolvedMax}
+                    step={previewNumberStep}
+                    placeholder={form.placeholder}
+                    disabled={form.status === "inactive"}
+                  />
+                  {previewNumberValidationMessage() && (
+                    <p className="text-xs text-destructive">
+                      {previewNumberValidationMessage()}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </aside>
         </div>
