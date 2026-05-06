@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { useFieldStore } from "@/stores/field-store";
 import type { FieldSchema } from "@/data/types";
+import { Switch } from "@/components/ui/switch";
 
 interface FieldDrawerProps {
   open: boolean;
@@ -149,8 +150,6 @@ export const FieldDrawer = ({ open, onOpenChange }: FieldDrawerProps) => {
       status: form.status,
       usageCount: 0,
     };
-
-    console.log(field);
 
     addField(field);
     toast.success(`Field "${field.label}" created`);
@@ -442,33 +441,38 @@ export const FieldDrawer = ({ open, onOpenChange }: FieldDrawerProps) => {
             <h3 className="text-sm font-medium">Preview</h3>
             <div className="mt-3 space-y-2 text-sm text-muted-foreground">
               {form.type === "text" && (
+                <div className="space-y-2 mt-3">
+                  <Label htmlFor="field-label">{form.label || "Label"}</Label>
+                  <Input
+                    id="field-label"
+                    value={previewValue}
+                    onChange={(event) => {
+                      const nextValue =
+                        resolvedMaxLength !== undefined
+                          ? event.target.value.slice(0, resolvedMaxLength)
+                          : event.target.value;
+                      setPreviewValue(nextValue);
+                    }}
+                    maxLength={resolvedMaxLength}
+                    placeholder={form.placeholder}
+                    disabled={form.status === "inactive"}
+                  />
+                  {previewValidationMessage && (
+                    <p className="text-xs text-destructive">
+                      {previewValidationMessage}
+                    </p>
+                  )}
+                </div>
+              )}
+              {form.type === "boolean" && (
                 <div>
                   <div className="space-y-2 mt-3">
                     <Label htmlFor="field-label">{form.label || "Label"}</Label>
-                    <Input
-                      id="field-label"
-                      value={previewValue}
-                      onChange={(event) => {
-                        const nextValue =
-                          resolvedMaxLength !== undefined
-                            ? event.target.value.slice(0, resolvedMaxLength)
-                            : event.target.value;
-                        setPreviewValue(nextValue);
-                      }}
-                      maxLength={resolvedMaxLength}
-                      placeholder={form.placeholder}
-                      disabled={form.status === "inactive"}
-                    />
-                    {previewValidationMessage && (
-                      <p className="text-xs text-destructive">
-                        {previewValidationMessage}
-                      </p>
-                    )}
+                    <Switch disabled={form.status === "inactive"} />
                   </div>
                 </div>
               )}
               {form.type === "number" && <div></div>}
-              {form.type === "boolean" && <div></div>}
               {form.type === "select" && <div></div>}
             </div>
           </aside>
