@@ -8,11 +8,13 @@ export interface FieldSchema {
     min?: number;
     max?: number;
     pattern?: string;
+    maxLength?: string;
   };
   config: {
     placeholder?: string;
     defaultValue?: unknown;
     options?: string[];
+    decimalPlaces?: number;
   };
   status: "active" | "inactive";
   usageCount: number;

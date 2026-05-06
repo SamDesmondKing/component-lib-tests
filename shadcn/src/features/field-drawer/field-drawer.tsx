@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+
 import {
   Sheet,
   SheetContent,
@@ -25,12 +26,12 @@ interface FieldDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-function slugify(str: string) {
+const slugify = (str: string) => {
   return str
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "_")
     .replace(/^_|_$/g, "");
-}
+};
 
 const INITIAL = {
   label: "",
@@ -39,13 +40,22 @@ const INITIAL = {
   status: "active" as FieldSchema["status"],
   placeholder: "",
   defaultValue: "",
+  min: "",
+  max: "",
+  pattern: "",
+  maxLength: "",
+  decimalPlaces: "",
+  options: [] as string[],
+  optionDraft: "",
   required: false,
 };
 
-export function FieldDrawer({ open, onOpenChange }: FieldDrawerProps) {
-  const addField = useFieldStore((s) => s.addField);
+export const FieldDrawer = ({ open, onOpenChange }: FieldDrawerProps) => {
+  const addField = useFieldStore((state) => state.addField);
   const [form, setForm] = useState(INITIAL);
   const [nameEdited, setNameEdited] = useState(false);
+  const options = form.options ?? [];
+  const optionDraft = form.optionDraft ?? "";
 
   useEffect(() => {
     if (!open) {
@@ -54,36 +64,55 @@ export function FieldDrawer({ open, onOpenChange }: FieldDrawerProps) {
     }
   }, [open]);
 
-  function handleLabelChange(value: string) {
-    setForm((f) => ({
-      ...f,
+  const handleLabelChange = (value: string) => {
+    setForm((currentForm) => ({
+      ...currentForm,
       label: value,
-      name: nameEdited ? f.name : slugify(value),
+      name: nameEdited ? currentForm.name : slugify(value),
     }));
-  }
+  };
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
     if (!form.label.trim()) return;
+    if (form.type === "select" && options.length === 0) {
+      toast.error("Add at least one dropdown option");
+      return;
+    }
+
+    const min = form.min === "" ? undefined : Number(form.min);
+    const max = form.max === "" ? undefined : Number(form.max);
+    const decimalPlaces =
+      form.decimalPlaces === "" ? undefined : Number(form.decimalPlaces);
 
     const field: FieldSchema = {
       id: crypto.randomUUID(),
       label: form.label.trim(),
       name: form.name || slugify(form.label),
       type: form.type,
-      validation: { required: form.required },
+      validation: {
+        required: form.required,
+        min: form.type === "number" ? min : undefined,
+        max: form.type === "number" ? max : undefined,
+        pattern: form.type === "text" ? form.pattern : undefined,
+        maxLength: form.type === "text" ? form.maxLength : undefined,
+      },
       config: {
         placeholder: form.placeholder || undefined,
         defaultValue: form.defaultValue || undefined,
+        decimalPlaces: form.type === "number" ? decimalPlaces : undefined,
+        options: form.type === "select" ? options : undefined,
       },
       status: form.status,
       usageCount: 0,
     };
 
+    console.log(field);
+
     addField(field);
     toast.success(`Field "${field.label}" created`);
     onOpenChange(false);
-  }
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -97,7 +126,7 @@ export function FieldDrawer({ open, onOpenChange }: FieldDrawerProps) {
             <Input
               id="field-label"
               value={form.label}
-              onChange={(e) => handleLabelChange(e.target.value)}
+              onChange={(event) => handleLabelChange(event.target.value)}
               placeholder="e.g. Customer Name"
             />
           </div>
@@ -107,9 +136,12 @@ export function FieldDrawer({ open, onOpenChange }: FieldDrawerProps) {
             <Input
               id="field-name"
               value={form.name}
-              onChange={(e) => {
+              onChange={(event) => {
                 setNameEdited(true);
-                setForm((f) => ({ ...f, name: e.target.value }));
+                setForm((currentForm) => ({
+                  ...currentForm,
+                  name: event.target.value,
+                }));
               }}
               placeholder="auto-generated from label"
             />
@@ -119,8 +151,11 @@ export function FieldDrawer({ open, onOpenChange }: FieldDrawerProps) {
             <Label>Type</Label>
             <Select
               value={form.type}
-              onValueChange={(v) =>
-                setForm((f) => ({ ...f, type: v as FieldSchema["type"] }))
+              onValueChange={(value) =>
+                setForm((currentForm) => ({
+                  ...currentForm,
+                  type: value as FieldSchema["type"],
+                }))
               }
             >
               <SelectTrigger>
@@ -135,12 +170,167 @@ export function FieldDrawer({ open, onOpenChange }: FieldDrawerProps) {
             </Select>
           </div>
 
+          {form.type === "number" && (
+            <div className="space-y-2">
+              <div className="space-y-4">
+                <Label htmlFor="field-min">Min</Label>
+                <Input
+                  id="field-min"
+                  type="number"
+                  value={form.min}
+                  onChange={(event) =>
+                    setForm((currentForm) => ({
+                      ...currentForm,
+                      min: event.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="field-max">Max</Label>
+                <Input
+                  id="field-max"
+                  type="number"
+                  value={form.max}
+                  onChange={(event) =>
+                    setForm((currentForm) => ({
+                      ...currentForm,
+                      max: event.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="field-decimal-places">Decimal Places</Label>
+                <Input
+                  id="field-decimal-places"
+                  type="number"
+                  min={0}
+                  step={1}
+                  value={form.decimalPlaces}
+                  onChange={(event) =>
+                    setForm((currentForm) => ({
+                      ...currentForm,
+                      decimalPlaces: event.target.value,
+                    }))
+                  }
+                />
+              </div>
+            </div>
+          )}
+
+          {form.type === "select" && (
+            <div className="space-y-2">
+              <Label htmlFor="field-option-draft">Dropdown Options</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="field-option-draft"
+                  value={optionDraft}
+                  onChange={(event) =>
+                    setForm((currentForm) => ({
+                      ...currentForm,
+                      optionDraft: event.target.value,
+                    }))
+                  }
+                  placeholder="Type an option and add"
+                />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    const value = optionDraft.trim();
+                    if (!value) return;
+                    if (options.includes(value)) {
+                      toast.error("Option already added");
+                      return;
+                    }
+                    setForm((form) => ({
+                      ...form,
+                      options: [...(form.options ?? []), value],
+                      optionDraft: "",
+                    }));
+                  }}
+                >
+                  Add
+                </Button>
+              </div>
+
+              <div className="space-y-2">
+                {options.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    No options yet.
+                  </p>
+                )}
+
+                {options.map((option, index) => (
+                  <div
+                    key={option}
+                    className="flex items-center justify-between rounded-md border px-3 py-2"
+                  >
+                    <span className="text-sm">{option}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        setForm((currentForm) => ({
+                          ...currentForm,
+                          options: (currentForm.options ?? []).filter(
+                            (_option, optionIndex) => optionIndex !== index,
+                          ),
+                        }))
+                      }
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {form.type === "text" && (
+            <div className="space-y-2">
+              <div className="space-y-4">
+                <Label htmlFor="field-min">Pattern</Label>
+                <Input
+                  id="field-pattern"
+                  type="text"
+                  value={form.pattern}
+                  onChange={(event) =>
+                    setForm((currentForm) => ({
+                      ...currentForm,
+                      pattern: event.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="space-y-4">
+                <Label htmlFor="field-min">Max length</Label>
+                <Input
+                  id="field-min"
+                  type="text"
+                  value={form.maxLength}
+                  onChange={(event) =>
+                    setForm((currentForm) => ({
+                      ...currentForm,
+                      maxLength: event.target.value,
+                    }))
+                  }
+                />
+              </div>
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label>Status</Label>
             <Select
               value={form.status}
-              onValueChange={(v) =>
-                setForm((f) => ({ ...f, status: v as FieldSchema["status"] }))
+              onValueChange={(value) =>
+                setForm((currentForm) => ({
+                  ...currentForm,
+                  status: value as FieldSchema["status"],
+                }))
               }
             >
               <SelectTrigger>
@@ -158,8 +348,11 @@ export function FieldDrawer({ open, onOpenChange }: FieldDrawerProps) {
             <Input
               id="field-placeholder"
               value={form.placeholder}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, placeholder: e.target.value }))
+              onChange={(event) =>
+                setForm((currentForm) => ({
+                  ...currentForm,
+                  placeholder: event.target.value,
+                }))
               }
             />
           </div>
@@ -169,21 +362,29 @@ export function FieldDrawer({ open, onOpenChange }: FieldDrawerProps) {
             <Input
               id="field-default"
               value={form.defaultValue}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, defaultValue: e.target.value }))
+              onChange={(event) =>
+                setForm((currentForm) => ({
+                  ...currentForm,
+                  defaultValue: event.target.value,
+                }))
               }
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="field-required"
-              checked={form.required}
-              onCheckedChange={(v) =>
-                setForm((f) => ({ ...f, required: v === true }))
-              }
-            />
-            <Label htmlFor="field-required">Required</Label>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="field-required"
+                checked={form.required}
+                onCheckedChange={(checked) =>
+                  setForm((currentForm) => ({
+                    ...currentForm,
+                    required: checked === true,
+                  }))
+                }
+              />
+              <Label htmlFor="field-required">Required</Label>
+            </div>
           </div>
 
           <Button type="submit" className="w-full">
@@ -193,4 +394,4 @@ export function FieldDrawer({ open, onOpenChange }: FieldDrawerProps) {
       </SheetContent>
     </Sheet>
   );
-}
+};
