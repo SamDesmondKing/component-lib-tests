@@ -465,15 +465,39 @@ export const FieldDrawer = ({ open, onOpenChange }: FieldDrawerProps) => {
                 </div>
               )}
               {form.type === "boolean" && (
-                <div>
-                  <div className="space-y-2 mt-3">
-                    <Label htmlFor="field-label">{form.label || "Label"}</Label>
-                    <Switch disabled={form.status === "inactive"} />
-                  </div>
+                <div className="space-y-2 mt-3">
+                  <Label htmlFor="field-label">{form.label || "Label"}</Label>
+                  <Switch disabled={form.status === "inactive"} />
+                </div>
+              )}
+              {form.type === "select" && (
+                <div className="space-y-2 mt-3">
+                  <Label htmlFor="field-label">{form.label || "Label"}</Label>
+                  <Select
+                    disabled={
+                      form.status === "inactive" || options.length === 0
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          options.length === 0
+                            ? "Add options to preview"
+                            : form.placeholder || "Select an option"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {options.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
               {form.type === "number" && <div></div>}
-              {form.type === "select" && <div></div>}
             </div>
           </aside>
         </div>
