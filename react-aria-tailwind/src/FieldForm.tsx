@@ -14,21 +14,21 @@ import {
 } from "react-aria-components";
 import type { FieldSchema, FieldType, FieldStatus } from "./types";
 
-interface FieldFormProps {
+type FieldFormProps = {
 	onSave: (field: FieldSchema) => void;
-}
+};
 
 const FIELD_TYPES: FieldType[] = ["text", "number", "boolean", "select"];
 const STATUSES: FieldStatus[] = ["active", "inactive"];
 
-function slugify(s: string): string {
+const slugify = (s: string): string => {
 	return s
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, "_")
 		.replace(/^_|_$/g, "");
-}
+};
 
-function createDefaultField(): FieldSchema {
+const createDefaultField = (): FieldSchema => {
 	return {
 		id: crypto.randomUUID(),
 		label: "",
@@ -40,9 +40,9 @@ function createDefaultField(): FieldSchema {
 		status: "active",
 		usageCount: 0,
 	};
-}
+};
 
-export function FieldForm({ onSave }: FieldFormProps) {
+export const FieldForm = ({ onSave }: FieldFormProps) => {
 	const [field, setField] = useState<FieldSchema>(createDefaultField);
 	const [nameManuallyEdited, setNameManuallyEdited] = useState(false);
 
@@ -151,7 +151,9 @@ export function FieldForm({ onSave }: FieldFormProps) {
 			...prev,
 			config: {
 				...prev.config,
-				options: prev.config.options.filter((_, optionIndex) => optionIndex !== index),
+				options: prev.config.options.filter(
+					(_, optionIndex) => optionIndex !== index,
+				),
 			},
 		}));
 	};
@@ -310,7 +312,10 @@ export function FieldForm({ onSave }: FieldFormProps) {
 						</Button>
 					</div>
 					{field.config.options.map((option, index) => (
-						<div key={`${field.id}-option-${index}`} className="flex items-end gap-2">
+						<div
+							key={`${field.id}-option-${index}`}
+							className="flex items-end gap-2"
+						>
 							<TextField
 								name={`option-${index + 1}`}
 								value={option}
@@ -318,7 +323,10 @@ export function FieldForm({ onSave }: FieldFormProps) {
 								className="flex-1 flex flex-col gap-1"
 							>
 								<Label className={labelClass}>Option {index + 1}</Label>
-								<Input className={inputClass} placeholder={`Option ${index + 1}`} />
+								<Input
+									className={inputClass}
+									placeholder={`Option ${index + 1}`}
+								/>
 							</TextField>
 							<Button
 								type="button"
@@ -417,4 +425,4 @@ export function FieldForm({ onSave }: FieldFormProps) {
 			</Button>
 		</form>
 	);
-}
+};
