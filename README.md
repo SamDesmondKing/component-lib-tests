@@ -1,6 +1,6 @@
 # Component Library Tests
 
-Comparative implementations of **The Schema Architect** — a high-density admin tool for defining, validating, and previewing dynamic custom data fields — built with the same component library but different styling approaches.
+Comparative implementations of **The Schema Architect** — a high-density admin tool for defining, validating, and previewing dynamic custom data fields — built with different component libraries and styling approaches.
 
 ## Projects
 
@@ -8,6 +8,8 @@ Comparative implementations of **The Schema Architect** — a high-density admin
 |---|---|---|---|
 | react-aria-tailwind | React Aria | Tailwind CSS | `react-aria-tailwind/` |
 | react-aria-css | React Aria | Plain CSS | `react-aria-css/` |
+| mantine | Mantine | Mantine CSS Modules | `mantine/` |
+| shadcn | shadcn/ui (Radix) | Tailwind CSS | `shadcn/` |
 
 ## The Schema Architect
 
@@ -24,10 +26,26 @@ Each project implements the same set of features:
 
 ## Getting Started
 
-Each project is an independent Vite + React + TypeScript app:
+Each project is an independent Vite + React + TypeScript app using Bun:
 
 ```bash
-cd react-aria-tailwind  # or react-aria-css
-npm install
-npm run dev
+# React Aria + Tailwind
+cd react-aria-tailwind
+bun install
+bun run dev
+
+# React Aria + Plain CSS
+cd react-aria-css
+bun install
+bun run dev
+
+# Mantine
+cd mantine
+bun install
+bun run dev
+
+# shadcn/ui
+cd shadcn
+bun install
+bun run dev
 ```
