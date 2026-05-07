@@ -23,6 +23,11 @@ export interface Field {
   config: FieldConfig;
   status: "active" | "inactive";
   usageCount: number;
+  min?: number;
+  max?: number;
+  decimalPlaces?: number;
+  pattern?: string;
+  maxLength?: number;
 }
 
 interface AppState {
