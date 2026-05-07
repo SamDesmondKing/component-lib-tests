@@ -55,20 +55,9 @@ export function FieldDrawer({ onClose, onSave }: FieldDrawerProps) {
 						✕
 					</Button>
 				</div>
-
-				{/* Body — split into Editor and Preview panels (TASK-5 & TASK-6 are [manual]) */}
 				<div className="flex flex-1 overflow-hidden">
 					<div className="flex-1 overflow-y-auto p-6">
 						<FieldForm onSave={onSave} />
-					</div>
-					{/* Preview panel — placeholder for [manual] TASK-6: Live Component Preview */}
-					<div className="w-72 border-l border-gray-700 bg-gray-950 p-6">
-						<p className="text-xs font-medium uppercase text-gray-500">
-							Preview
-						</p>
-						<p className="mt-4 text-sm text-gray-400">
-							Live preview will render here. (Manual implementation)
-						</p>
 					</div>
 				</div>
 			</div>

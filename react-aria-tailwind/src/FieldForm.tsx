@@ -4,35 +4,34 @@ import {
 	Input,
 	Label,
 	Button,
+	FieldError,
+	Group,
 	Select,
 	SelectValue,
 	Popover,
 	ListBox,
 	ListBoxItem,
 	Checkbox,
+	NumberField,
+	Switch,
 } from "react-aria-components";
 import type { FieldSchema, FieldType, FieldStatus } from "./types";
 
-interface FieldFormProps {
+type FieldFormProps = {
 	onSave: (field: FieldSchema) => void;
-}
+};
 
-const FIELD_TYPES: FieldType[] = [
-	"text",
-	"number",
-	"boolean",
-	"select",
-];
+const FIELD_TYPES: FieldType[] = ["text", "number", "boolean", "select"];
 const STATUSES: FieldStatus[] = ["active", "inactive"];
 
-function slugify(s: string): string {
+const slugify = (s: string): string => {
 	return s
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, "_")
 		.replace(/^_|_$/g, "");
-}
+};
 
-function createDefaultField(): FieldSchema {
+const createDefaultField = (): FieldSchema => {
 	return {
 		id: crypto.randomUUID(),
 		label: "",
@@ -44,11 +43,16 @@ function createDefaultField(): FieldSchema {
 		status: "active",
 		usageCount: 0,
 	};
-}
+};
 
-export function FieldForm({ onSave }: FieldFormProps) {
+export const FieldForm = ({ onSave }: FieldFormProps) => {
 	const [field, setField] = useState<FieldSchema>(createDefaultField);
 	const [nameManuallyEdited, setNameManuallyEdited] = useState(false);
+	const [isBooleanPreviewSelected, setIsBooleanPreviewSelected] =
+		useState(false);
+	const [numberPreviewValue, setNumberPreviewValue] = useState<
+		number | undefined
+	>(undefined);
 
 	const updateField = useCallback(
 		<K extends keyof FieldSchema>(key: K, value: FieldSchema[K]) => {
@@ -75,14 +79,90 @@ export function FieldForm({ onSave }: FieldFormProps) {
 		setField((prev) => ({
 			...prev,
 			type,
+			validation: {
+				...prev.validation,
+				pattern: undefined,
+			},
 			config: {
 				...prev.config,
-				options: type === "select" ? ["Option A", "Option B"] : [],
+				options: type === "select" ? prev.config.options : [],
 			},
 			min: undefined,
 			max: undefined,
 			decimalPlaces: undefined,
 			maxLength: undefined,
+		}));
+	};
+
+	const handleMinChange = (value: number) => {
+		setField((prev) => ({
+			...prev,
+			min: Number.isFinite(value) ? value : undefined,
+		}));
+	};
+
+	const handleMaxChange = (value: number) => {
+		setField((prev) => ({
+			...prev,
+			max: Number.isFinite(value) ? value : undefined,
+		}));
+	};
+
+	const handleDecimalPlacesChange = (value: number) => {
+		setField((prev) => ({
+			...prev,
+			decimalPlaces: Number.isFinite(value) ? value : undefined,
+		}));
+	};
+
+	const handlePatternChange = (value: string) => {
+		setField((prev) => ({
+			...prev,
+			validation: {
+				...prev.validation,
+				pattern: value || undefined,
+			},
+		}));
+	};
+
+	const handleMaxLengthChange = (value: number) => {
+		setField((prev) => ({
+			...prev,
+			maxLength: Number.isFinite(value) ? value : undefined,
+		}));
+	};
+
+	const handleOptionChange = (index: number, value: string) => {
+		setField((prev) => ({
+			...prev,
+			config: {
+				...prev.config,
+				options: prev.config.options.map((option, optionIndex) =>
+					optionIndex === index ? value : option,
+				),
+			},
+		}));
+	};
+
+	const handleAddOption = () => {
+		setField((prev) => ({
+			...prev,
+			config: {
+				...prev.config,
+				options: [...prev.config.options, ""],
+			},
+		}));
+	};
+
+	const handleRemoveOption = (index: number) => {
+		setField((prev) => ({
+			...prev,
+			config: {
+				...prev.config,
+				options: prev.config.options.filter(
+					(_, optionIndex) => optionIndex !== index,
+				),
+			},
 		}));
 	};
 
@@ -95,163 +175,437 @@ export function FieldForm({ onSave }: FieldFormProps) {
 		"w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-1.5 text-sm text-gray-200 placeholder-gray-500 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
 	const labelClass = "text-sm font-medium text-gray-300";
 
+	const numberPreviewStep =
+		field.decimalPlaces != null ? 1 / 10 ** field.decimalPlaces : undefined;
+
 	return (
-		<form onSubmit={handleSubmit} className="flex flex-col gap-4">
-			{/* Label */}
-			<TextField
-				value={field.label}
-				onChange={handleLabelChange}
-				className="flex flex-col gap-1"
-			>
-				<Label className={labelClass}>Label</Label>
-				<Input className={inputClass} placeholder="Field label" />
-			</TextField>
-
-			{/* Name (slug) */}
-			<TextField
-				value={field.name}
-				onChange={handleNameChange}
-				className="flex flex-col gap-1"
-			>
-				<Label className={labelClass}>Name (slug)</Label>
-				<Input
-					className={inputClass + " font-mono text-xs"}
-					placeholder="field_name"
-				/>
-			</TextField>
-
-			{/* Type */}
-			<Select
-				selectedKey={field.type}
-				onSelectionChange={handleTypeChange}
-				className="flex flex-col gap-1"
-			>
-				<Label className={labelClass}>Type</Label>
-				<Button
-					className={
-						inputClass + " flex items-center justify-between text-left"
-					}
+		<div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+			<form onSubmit={handleSubmit} className="flex flex-1 flex-col gap-4">
+				{/* Label */}
+				<TextField
+					value={field.label}
+					onChange={handleLabelChange}
+					className="flex flex-col gap-1"
 				>
-					<SelectValue />
-					<span>▾</span>
-				</Button>
-				<Popover className="w-(--trigger-width) rounded-lg border border-gray-600 bg-gray-800 shadow-lg">
-					<ListBox className="p-1">
-						{FIELD_TYPES.map((t) => (
-							<ListBoxItem
-								key={t}
-								id={t}
-								className="cursor-pointer rounded px-3 py-1.5 text-sm capitalize text-gray-200 hover:bg-gray-700 data-[focused]:bg-gray-700"
-							>
-								{t}
-							</ListBoxItem>
-						))}
-					</ListBox>
-				</Popover>
-			</Select>
+					<Label className={labelClass}>Label</Label>
+					<Input className={inputClass} placeholder="Field label" />
+				</TextField>
 
-			{/* Status */}
-			<Select
-				selectedKey={field.status}
-				onSelectionChange={(key) => {
-					if (key != null) updateField("status", key as FieldStatus);
-				}}
-				className="flex flex-col gap-1"
-			>
-				<Label className={labelClass}>Status</Label>
-				<Button
-					className={
-						inputClass + " flex items-center justify-between text-left"
-					}
+				{/* Name (slug) */}
+				<TextField
+					value={field.name}
+					onChange={handleNameChange}
+					className="flex flex-col gap-1"
 				>
-					<SelectValue />
-					<span>▾</span>
-				</Button>
-				<Popover className="w-(--trigger-width) rounded-lg border border-gray-600 bg-gray-800 shadow-lg">
-					<ListBox className="p-1">
-						{STATUSES.map((s) => (
-							<ListBoxItem
-								key={s}
-								id={s}
-								className="cursor-pointer rounded px-3 py-1.5 text-sm capitalize text-gray-200 hover:bg-gray-700 data-[focused]:bg-gray-700"
+					<Label className={labelClass}>Name (slug)</Label>
+					<Input
+						className={`${inputClass} font-mono text-xs`}
+						placeholder="field_name"
+					/>
+				</TextField>
+
+				{/* Type */}
+				<Select
+					selectedKey={field.type}
+					onSelectionChange={handleTypeChange}
+					className="flex flex-col gap-1"
+				>
+					<Label className={labelClass}>Type</Label>
+					<Button
+						className={`${inputClass} flex items-center justify-between text-left`}
+					>
+						<SelectValue />
+						<span>▾</span>
+					</Button>
+					<Popover className="w-(--trigger-width) rounded-lg border border-gray-600 bg-gray-800 shadow-lg">
+						<ListBox className="p-1">
+							{FIELD_TYPES.map((t) => (
+								<ListBoxItem
+									key={t}
+									id={t}
+									className="cursor-pointer rounded px-3 py-1.5 text-sm capitalize text-gray-200 hover:bg-gray-700 data-[focused]:bg-gray-700"
+								>
+									{t}
+								</ListBoxItem>
+							))}
+						</ListBox>
+					</Popover>
+				</Select>
+
+				{field.type === "number" && (
+					<>
+						<NumberField
+							name="min"
+							value={field.min}
+							onChange={handleMinChange}
+							maxValue={field.max}
+							className="flex flex-col gap-1"
+						>
+							<Label className={labelClass}>Min</Label>
+							<Input
+								className={inputClass}
+								placeholder="Enter the min"
+								inputMode="decimal"
+							/>
+						</NumberField>
+						<NumberField
+							name="max"
+							value={field.max}
+							onChange={handleMaxChange}
+							minValue={field.min}
+							className="flex flex-col gap-1"
+						>
+							<Label className={labelClass}>Max</Label>
+							<Input
+								className={inputClass}
+								placeholder="Enter the max"
+								inputMode="decimal"
+							/>
+						</NumberField>
+						<NumberField
+							name="decimalPlaces"
+							value={field.decimalPlaces}
+							onChange={handleDecimalPlacesChange}
+							minValue={0}
+							step={1}
+							formatOptions={{ maximumFractionDigits: 0 }}
+							className="flex flex-col gap-1"
+						>
+							<Label className={labelClass}>Decimal places</Label>
+							<Input
+								className={inputClass}
+								placeholder="Enter the decimal places"
+								inputMode="numeric"
+							/>
+						</NumberField>
+					</>
+				)}
+
+				{field.type === "text" && (
+					<>
+						<TextField
+							name="pattern"
+							value={field.validation.pattern ?? ""}
+							onChange={handlePatternChange}
+							className="flex flex-col gap-1"
+						>
+							<Label className={labelClass}>Pattern</Label>
+							<Input className={inputClass} placeholder="Field pattern" />
+						</TextField>
+						<NumberField
+							name="maxLength"
+							value={field.maxLength}
+							onChange={handleMaxLengthChange}
+							minValue={0}
+							step={1}
+							formatOptions={{ maximumFractionDigits: 0 }}
+							className="flex flex-col gap-1"
+						>
+							<Label className={labelClass}>Max Length</Label>
+							<Input
+								className={inputClass}
+								placeholder="Field max length"
+								inputMode="numeric"
+							/>
+						</NumberField>
+					</>
+				)}
+
+				{field.type === "select" && (
+					<div className="flex flex-col gap-3">
+						<div className="flex items-center justify-between">
+							<Label className={labelClass}>Dropdown options</Label>
+							<Button
+								type="button"
+								onPress={handleAddOption}
+								className="rounded-lg border border-gray-600 px-3 py-1.5 text-sm text-gray-200 hover:bg-gray-800"
 							>
-								{s}
-							</ListBoxItem>
+								Add option
+							</Button>
+						</div>
+						{field.config.options.map((option, index) => (
+							<div
+								key={`${field.id}-option-${index}`}
+								className="flex items-end gap-2"
+							>
+								<TextField
+									name={`option-${index + 1}`}
+									value={option}
+									onChange={(value) => handleOptionChange(index, value)}
+									className="flex-1 flex flex-col gap-1"
+								>
+									<Label className={labelClass}>Option {index + 1}</Label>
+									<Input
+										className={inputClass}
+										placeholder={`Option ${index + 1}`}
+									/>
+								</TextField>
+								<Button
+									type="button"
+									onPress={() => handleRemoveOption(index)}
+									className="rounded-lg border border-gray-600 px-3 py-1.5 text-sm text-gray-200 hover:bg-gray-800"
+								>
+									Remove
+								</Button>
+							</div>
 						))}
-					</ListBox>
-				</Popover>
-			</Select>
+					</div>
+				)}
 
-			{/* Placeholder */}
-			<TextField
-				value={field.config.placeholder}
-				onChange={(v) =>
-					setField((prev) => ({
-						...prev,
-						config: { ...prev.config, placeholder: v },
-					}))
-				}
-				className="flex flex-col gap-1"
-			>
-				<Label className={labelClass}>Placeholder</Label>
-				<Input className={inputClass} placeholder="Placeholder text" />
-			</TextField>
+				{/* Status */}
+				<Select
+					selectedKey={field.status}
+					onSelectionChange={(key) => {
+						if (key != null) updateField("status", key as FieldStatus);
+					}}
+					className="flex flex-col gap-1"
+				>
+					<Label className={labelClass}>Status</Label>
+					<Button
+						className={`${inputClass} flex items-center justify-between text-left`}
+					>
+						<SelectValue />
+						<span>▾</span>
+					</Button>
+					<Popover className="w-(--trigger-width) rounded-lg border border-gray-600 bg-gray-800 shadow-lg">
+						<ListBox className="p-1">
+							{STATUSES.map((s) => (
+								<ListBoxItem
+									key={s}
+									id={s}
+									className="cursor-pointer rounded px-3 py-1.5 text-sm capitalize text-gray-200 hover:bg-gray-700 data-[focused]:bg-gray-700"
+								>
+									{s}
+								</ListBoxItem>
+							))}
+						</ListBox>
+					</Popover>
+				</Select>
 
-			{/* Default Value */}
-			<TextField
-				value={String(field.config.defaultValue ?? "")}
-				onChange={(v) =>
-					setField((prev) => ({
-						...prev,
-						config: { ...prev.config, defaultValue: v },
-					}))
-				}
-				className="flex flex-col gap-1"
-			>
-				<Label className={labelClass}>Default Value</Label>
-				<Input className={inputClass} placeholder="Default value" />
-			</TextField>
+				{/* Placeholder */}
+				<TextField
+					value={field.config.placeholder}
+					onChange={(v) =>
+						setField((prev) => ({
+							...prev,
+							config: { ...prev.config, placeholder: v },
+						}))
+					}
+					className="flex flex-col gap-1"
+				>
+					<Label className={labelClass}>Placeholder</Label>
+					<Input className={inputClass} placeholder="Placeholder text" />
+				</TextField>
 
-			{/* Required */}
-			<Checkbox
-				isSelected={field.validation.required}
-				onChange={(v) =>
-					setField((prev) => ({
-						...prev,
-						validation: { ...prev.validation, required: v },
-					}))
-				}
-				className="flex items-center gap-2"
-			>
-				<div className="flex h-4 w-4 items-center justify-center rounded border border-gray-500 bg-gray-700 text-[10px] text-transparent data-[selected]:bg-blue-600 data-[selected]:border-blue-600 data-[selected]:text-white">
-					✓
-				</div>
-				<span className="text-sm text-gray-300">Required</span>
-			</Checkbox>
+				{/* Default Value */}
+				<TextField
+					value={String(field.config.defaultValue ?? "")}
+					onChange={(v) =>
+						setField((prev) => ({
+							...prev,
+							config: { ...prev.config, defaultValue: v },
+						}))
+					}
+					className="flex flex-col gap-1"
+				>
+					<Label className={labelClass}>Default Value</Label>
+					<Input className={inputClass} placeholder="Default value" />
+				</TextField>
 
-			{/* ── Type-specific fields placeholder ── */}
-			{/* [manual] TASK-5: Conditional Configuration — implement type-specific fields here */}
-			<div className="rounded-lg border border-dashed border-gray-600 p-4">
-				<p className="text-xs text-gray-500">
-					Type-specific fields for "{field.type}" go here. (Manual
-					implementation — TASK-5)
+				{/* Required */}
+				<Checkbox
+					isSelected={field.validation.required}
+					onChange={(v) =>
+						setField((prev) => ({
+							...prev,
+							validation: { ...prev.validation, required: v },
+						}))
+					}
+					className="flex items-center gap-2"
+				>
+					<div className="flex h-4 w-4 items-center justify-center rounded border border-gray-500 bg-gray-700 text-[10px] text-transparent data-[selected]:bg-blue-600 data-[selected]:border-blue-600 data-[selected]:text-white">
+						✓
+					</div>
+					<span className="text-sm text-gray-300">Required</span>
+				</Checkbox>
+
+				<Button
+					type="submit"
+					className="mt-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
+				>
+					Save Field
+				</Button>
+			</form>
+
+			<aside className="w-full shrink-0 rounded-xl border border-gray-700 bg-gray-900 p-5 lg:w-80">
+				<p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+					Live preview
 				</p>
-			</div>
 
-			{/* ── Visibility Rule placeholder ── */}
-			{/* [manual] TASK-7: Nested Rule Builder — implement visibility rules here */}
-			<div className="rounded-lg border border-dashed border-gray-600 p-4">
-				<p className="text-xs text-gray-500">
-					Visibility Rule section goes here. (Manual implementation — TASK-7)
-				</p>
-			</div>
+				{field.type === "boolean" && (
+					<div className="mt-4 rounded-lg border border-gray-700 bg-gray-950/60 p-4">
+						<p className="tracking-wide text-gray-600">
+							{field.label || "Label"}
+						</p>
+						<Switch
+							isDisabled={field.status === "inactive"}
+							isSelected={isBooleanPreviewSelected}
+							onChange={setIsBooleanPreviewSelected}
+							className="group mt-3 inline-flex items-center gap-3"
+						>
+							{({ isSelected }) => (
+								<>
+									<div className="flex h-6 w-11 items-center rounded-full bg-gray-700 px-0.5 transition-colors group-data-[selected]:bg-blue-600">
+										<span
+											className={`h-5 w-5 rounded-full bg-white shadow transition-transform ${
+												isSelected ? "translate-x-5" : "translate-x-0"
+											}`}
+										/>
+									</div>
+								</>
+							)}
+						</Switch>
+					</div>
+				)}
 
-			<Button
-				type="submit"
-				className="mt-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
-			>
-				Save Field
-			</Button>
-		</form>
+				{field.type === "number" && (
+					<div className="mt-4 rounded-lg border border-gray-700 bg-gray-950/60 p-4">
+						<p className="tracking-wide text-gray-600">
+							{field.label || "Label"}
+						</p>
+						<NumberField
+							name={field.name || "number_field_preview"}
+							value={numberPreviewValue}
+							onChange={setNumberPreviewValue}
+							minValue={field.min}
+							maxValue={field.max}
+							step={numberPreviewStep}
+							commitBehavior="validate"
+							validationBehavior="aria"
+							validate={(value) => {
+								if (field.decimalPlaces == null) {
+									return true;
+								}
+
+								const factor = 10 ** field.decimalPlaces;
+								const rounded = Math.round(value * factor) / factor;
+								if (Math.abs(value - rounded) > Number.EPSILON) {
+									return `Value can have at most ${field.decimalPlaces} decimal place${field.decimalPlaces === 1 ? "" : "s"}.`;
+								}
+
+								return true;
+							}}
+							formatOptions={
+								field.decimalPlaces != null
+									? { maximumFractionDigits: field.decimalPlaces }
+									: undefined
+							}
+							className="mt-3 flex flex-col gap-1"
+						>
+							<Label className={labelClass}>Value</Label>
+							<Group className="flex items-stretch">
+								<Input
+									className={inputClass}
+									placeholder={field.config.placeholder || "Enter a number"}
+									inputMode="decimal"
+								/>
+								<Button
+									slot="decrement"
+									className="ml-2 rounded-lg border border-gray-600 px-2 text-gray-200 hover:bg-gray-800"
+								>
+									-
+								</Button>
+								<Button
+									slot="increment"
+									className="ml-1 rounded-lg border border-gray-600 px-2 text-gray-200 hover:bg-gray-800"
+								>
+									+
+								</Button>
+							</Group>
+							<FieldError className="mt-2 text-xs text-red-400" />
+						</NumberField>
+					</div>
+				)}
+
+				{field.type === "text" && (
+					<div className="mt-4 rounded-lg border border-gray-700 bg-gray-950/60 p-4">
+						<p className="tracking-wide text-gray-600">
+							{field.label || "Label"}
+						</p>
+						<TextField
+							isRequired={field.validation.required}
+							isDisabled={field.status === "inactive"}
+							validationBehavior="aria"
+							validate={(value) => {
+								if (field.validation.pattern) {
+									try {
+										const re = new RegExp(field.validation.pattern);
+										if (value && !re.test(value)) {
+											return `Value must match pattern: ${field.validation.pattern}`;
+										}
+									} catch {
+										// invalid regex, skip validation
+									}
+								}
+								return true;
+							}}
+							className="mt-3 flex flex-col gap-1"
+						>
+							<Label className={labelClass}>Value</Label>
+							<Input
+								className={inputClass}
+								placeholder={field.config.placeholder || "Enter text"}
+								maxLength={field.maxLength}
+							/>
+							<FieldError className="mt-2 text-xs text-red-400" />
+						</TextField>
+					</div>
+				)}
+
+				{field.type === "select" && (
+					<div className="mt-4 rounded-lg border border-gray-700 bg-gray-950/60 p-4">
+						<p className="tracking-wide text-gray-600">
+							{field.label || "Label"}
+						</p>
+						<Select
+							isRequired={field.validation.required}
+							isDisabled={field.status === "inactive"}
+							placeholder={field.config.placeholder || "Choose an option"}
+							className="mt-3 flex flex-col gap-1"
+						>
+							<Label className={labelClass}>Value</Label>
+							<Button
+								className={`${inputClass} flex items-center justify-between text-left`}
+							>
+								<SelectValue />
+								<span>▾</span>
+							</Button>
+							<Popover className="w-(--trigger-width) rounded-lg border border-gray-600 bg-gray-800 shadow-lg">
+								<ListBox className="p-1">
+									{(field.config.options ?? []).length > 0 ? (
+										field.config.options.map((opt) => (
+											<ListBoxItem
+												key={opt}
+												id={opt}
+												className="cursor-pointer rounded px-3 py-1.5 text-sm text-gray-200 hover:bg-gray-700 data-[focused]:bg-gray-700"
+											>
+												{opt}
+											</ListBoxItem>
+										))
+									) : (
+										<ListBoxItem
+											id="__empty"
+											className="px-3 py-1.5 text-sm italic text-gray-500"
+										>
+											No options defined
+										</ListBoxItem>
+									)}
+								</ListBox>
+							</Popover>
+						</Select>
+					</div>
+				)}
+			</aside>
+		</div>
 	);
-}
+};
